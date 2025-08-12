@@ -1,0 +1,2 @@
+# weblatetools
+Hacks for translations
