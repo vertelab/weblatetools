@@ -1,0 +1,66 @@
+
+Arbetsgången:
+1. Tanka alla odoo-filerna från UTV17 maskinen, bara i18n/sv.po filerna.
+2. Lägg i hemkatalogen.
+3. Kopiera till din egen dator.
+4. Kör AI-översättningen på alla sv.po-filerna med din egen dator via DeepL.
+5. Kontrollera filerna!
+- först "snyggar du till" översättningen med vår egen fil, tr.sh
+- Installera Dennis i din dator! https://pypi.org/project/dennis/
+- dennis-cmd status 
+- dennis-cmd lint
+
+
+
+x x x
+  
+
+1. ta bort de förra filerna
+core-odoo.tar  tiden.ps  tmp
+jakob@odooutv17:~$ rm core-odoo.tar 
+jakob@odooutv17:~$ ls
+tiden.ps  tmp
+
+
+
+Exta!
+Det står fel i koden! Står sv.po, ska vara se_SE.po!
+jakob@bubbafett:~/Dokument/odoo18$ ./deep2.sh odoo-contract/*
+
+
+2. kopiera alla filerna!
+jakob@odooutv17:/usr/share/core-odoo/addons$ tar cvf ~/core-odoo.tar */i18n/sv.po
+
+jakob@odooutv17:/usr/share/$ tar cvf ~/odooext.tar */*/i18n/sv.po
+
+3. packa upp filerna
+jakob@odooutv17:~$ mkdir tmp
+jakob@odooutv17:~$ cd tmp/
+jakob@odooutv17:~$ tar xvf ../core-odoo.tar 
+
+
+Själva översättningen
+
+jakob@jango-fett:~/translate17-2$ ./deep2.sh sale*
+jakob@jango-fett:~/translate17-2$ ./tr_all.sh sale*
+
+jakob@jango-fett:~/translate17-2$ dennis-cmd status sale*
+jakob@jango-fett:~/translate17-2$ dennis-cmd lint sale*
+
+
+OCA! Ett steg ner! :-)
+
+jakob@jango-fett:~/translate17-oca16$ ./deep2.sh odooext-OCA*/*
+jakob@jango-fett:~/translate17-oca16$ ./tr_all.sh odooext-OCA*/*
+
+jakob@jango-fett:~/translate17-oca16$ dennis-cmd status odooext-OCA*/*
+jakob@jango-fett:~/translate17-oca16$ dennis-cmd lint odooext-OCA*/*
+
+OCA! $module/i18n/sv.po Ett steg ner! :-)
+
+jakob@jango-fett:~/translate17-oca16-3$ ./deep2.sh *
+jakob@jango-fett:~/translate17-oca16-3$ ./tr_all.sh *
+
+jakob@jango-fett:~/translate17-oca16-3$ dennis-status lint *
+jakob@jango-fett:~/translate17-oca16-3$ dennis-cmd lint *
+
