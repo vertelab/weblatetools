@@ -1,16 +1,16 @@
 
 Arbetsgången:
-1. Tanka alla odoo-filerna från UTV17 maskinen, bara i18n/sv.po filerna.
+1. Tanka alla sv.po-filerna från UTV17 maskinen. Eller 18 eller 19...!
 2. Lägg i hemkatalogen.
 3. Kopiera till din egen dator.
-4. Kör AI-översättningen på alla sv.po-filerna med din egen dator via DeepL.
+4. Kör AI-översättningen på alla sv.po-filerna med din egen dator via DeepL, beskrivet nedan.
 5. Kontrollera filerna!
 - först "snyggar du till" översättningen med vår egen fil, tr.sh
 - Installera Dennis i din dator! https://pypi.org/project/dennis/
 - dennis-cmd status 
 - dennis-cmd lint
 
-
+Källa: https://github.com/vertelab/weblatetools/deepL/
 
 x x x
   
