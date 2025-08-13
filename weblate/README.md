@@ -1,7 +1,7 @@
-Weblate translation
+**Weblate translation**
 
-1. https://translate.odoo.com/
-2. https://translation.odoo-community.org/
+1. Odoo at https://translate.odoo.com/
+2. OCA at https://translation.odoo-community.org/
 
 
 Combined translation for Odoo and OCA.
