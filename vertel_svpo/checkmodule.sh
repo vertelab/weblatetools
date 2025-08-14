@@ -48,6 +48,7 @@ if [ "$EXPORT_PO" = true ]; then
     for module in "${MODULE_LIST[@]}"; do
         PO_FILE="${module}-${LANG_CODE}.po"
         echo "Exporting: $PO_FILE"
-        sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --modules ${module} --i18n-export=${PO_FILE} --lang=${LANG_CODE}"
+        sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --modules ${module} --i18n-export=/tmp/$$.po --lang=${LANG_CODE}"
+        sudo mv /tmp/$$.po ${PO_FILE}
     done
 fi
