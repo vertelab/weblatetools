@@ -1,38 +1,57 @@
 #!/bin/bash
-#
-# 2025-08-12
-# Vertel internal
-# List all modules where sv_SE.po file is missing
-# Create an odootool shortcut to paste in the Terminal.
+LANG="sv"
+ODOOPROJECT=""
+SEPARATOR="\n"
 
-# Run this file:
-# chmod +x vertel_svpo.sh
-# ./vertel_svpo.sh
+usage() {
+    echo 'Usage: $0 -p all|project [-l language] [-e] [-s ,|"\n" (default)]'
+    echo
+    echo "  -p <project|all>   Project required if not -e, all sets odoo-* as search pattern "
+    echo "  -l <language>      Language code (default: sv)"
+    echo "  -e                 Sets project to odooext-* as search pattern"
+    echo '  -s <separator>     Choose coma (,) or "\n" (new line, default)'
+    echo
+    exit 1
+}
 
-# Hantera argument (-d argument)
-while getopts d: option
+# Hantera flaggor
+while getopts p:l:es: option
 do
-   case "${option}"
-     in
-     d) databasnamn=${OPTARG};;
+   case "${option}" in
+     p) ODOOPROJECT=${OPTARG};;
+     l) LANG=${OPTARG};;
+     e) ODOOPROJECT="odooext-*";;
+     s) SEPARATOR=${OPTARG};;
+     *) usage;;
    esac
 done
-echo "Databasnamn: $databasnamn"
 
-# Sökvägens mönster
-BASE_PATH="/usr/share/odoo-*/*"
+# Kontroll om -p eller -e använts
+if [ -z "$ODOOPROJECT" ]; then
+    echo "Fel: Du måste ange -p eller -e."
+    usage
+fi
 
-echo "Vertel: Letar efter kataloger där 'sv.po' saknas..."
+# Om -p all används → sätt mönstret till odoo-*
+if [ "$ODOOPROJECT" = "all" ]; then
+    ODOOPROJECT="odoo-*"
+fi
 
-# Leta igenom alla matchande kataloger
+echo "Search for missing '$LANG.po' in $ODOOPROJECT..."
+BASE_PATH="/usr/share/${ODOOPROJECT}/*"
+MODULELIST=""
+
 for dir in $BASE_PATH; do
-    # Kontrollera om det är en katalog
     if [ -d "$dir" ]; then
-       if [ ! -f "$dir/i18n/sv.po" ] && [ ! -f "$dir/i18n/sv_SE.po" ]; then
-            module_name=$(basename "$dir")
-            echo "Saknas: $dir"
-            echo "odoolangexport -m $module_name -d $databasnamn -l sv"
-            #echo " "
+       if [ ! -f "$dir/i18n/$LANG.po" ]; then
+            modname=$(basename "$dir")
+            if [ -z "$MODULELIST" ]; then
+                MODULELIST="$modname"
+            else
+                MODULELIST="$MODULELIST"$SEPARATOR"$modname"
+            fi
         fi
     fi
 done
+
+echo -e "$MODULELIST"
