@@ -52,3 +52,4 @@ if [ "$EXPORT_PO" = true ]; then
         sudo mv /tmp/$$.po ${PO_FILE}
     done
 fi
+sudo service odoo start
