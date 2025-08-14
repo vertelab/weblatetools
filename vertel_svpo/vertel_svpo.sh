@@ -9,6 +9,16 @@
 # chmod +x vertel_svpo.sh
 # ./vertel_svpo.sh
 
+# Hantera argument (-d argument)
+while getopts d: option
+do
+   case "${option}"
+     in
+     d) databasnamn=${OPTARG};;
+   esac
+done
+echo "Databasnamn: $databasnamn"
+
 # Sökvägens mönster
 BASE_PATH="/usr/share/odoo-*/*"
 
@@ -21,8 +31,8 @@ for dir in $BASE_PATH; do
        if [ ! -f "$dir/i18n/sv.po" ] && [ ! -f "$dir/i18n/sv_SE.po" ]; then
             module_name=$(basename "$dir")
             echo "Saknas: $dir"
-            echo "odoolangexport -m $module_name -d database -l sv_SE"
-            echo " "
+            echo "odoolangexport -m $module_name -d $databasnamn -l sv"
+            #echo " "
         fi
     fi
 done
