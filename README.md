@@ -125,3 +125,20 @@ install_po -g *.po
 
 ```
 Install_po can also update Git with the latest changes
+
+
+__I want to create a new glossary on OCA for project contract__
+
+1) download glossary from Odoo
+2) Download po-file from largest/main-module in OCA
+3) merge odoo-glossary with po-file
+4) translate missing words using translate_po
+5) upload new oca-glossary
+
+__I want to create language-file for missing modules in OCA__
+
+1) missing_po -w oca (list links to weblate)
+2) Use the link to weblate and create the file
+
+
+
