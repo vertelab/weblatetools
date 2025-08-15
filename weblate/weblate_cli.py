@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
+from polib import pofile
 import argparse
-import os
-import sys
-import logging
+import csv
+import deepl
 import fnmatch
 import glob
-import csv
+import logging
+import os
+import sys
 import wlc
-import deepl
-from polib import pofile
+import xml.etree.ElementTree as ET
 
 # Configure logging
 logging.basicConfig(level=logging.INFO,
@@ -51,6 +52,53 @@ class WeblateWLCClient:
             f.write(r.content)
         logger.info(f"Downloaded: {output_path}")
         return output_path
+
+    def download_glossary(self, project_slug, component_slug, language_code, file_type='tbx'):        
+        # Lägg till token i headern så att API tillåter hämtning
+        headers = {'Accept': 'application/x-gettext'}
+        if self.api_token:
+            headers['Authorization'] = f'Token {self.api_token}'
+        url = f"{self.client.url}translations/{project_slug}/{component_slug}/{language_code}/file/"
+        r = self.client.session.get(url, headers=headers)
+        r.raise_for_status()
+        with open('glossary.tbx', "wb") as f:
+            f.write(r.content)
+        if file_type == 'csv':
+            self._convert_tbx_to_csv('glossary.tbx','glossary.csv',source_lang='en',target_lang=language_code)
+            os.remove('glossary.tbx')
+            logger.info(f"Downloaded: glossary.csv")
+        else:
+            logger.info(f"Downloaded: glossary.tbx")
+        return 'glossary'
+
+    def _convert_tbx_to_csv(self, tbx_path, csv_path, source_lang="en", target_lang="sv"):
+        """
+        Konverterar TBX (MARTIF XML) till CSV med kolumner 'source', 'target'
+        """
+        tree = ET.parse(tbx_path)
+        root = tree.getroot()
+
+        # TBX använder ofta XML-namnrymder, men vi kan matcha utan via .tag.endswith
+        rows = []
+        for term_entry in root.findall(".//termEntry"):
+            src_term = None
+            tgt_term = None
+            for lang_set in term_entry.findall("langSet"):
+                lang = lang_set.get("{http://www.w3.org/XML/1998/namespace}lang")
+                term_elem = lang_set.find(".//term")
+                if term_elem is not None:
+                    if lang.lower() == source_lang.lower():
+                        src_term = term_elem.text
+                    elif lang.lower() == target_lang.lower():
+                        tgt_term = term_elem.text
+            if src_term and tgt_term:
+                rows.append((src_term, tgt_term))
+
+        # Skriv CSV
+        with open(csv_path, "w", newline='', encoding="utf-8") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["source", "target"])
+            writer.writerows(rows)
 
     def upload_po_file(self, project_slug, component_slug, language_code, file_path, method='translate'):
         with open(file_path, "rb") as f:
@@ -208,7 +256,12 @@ def main():
     dp.add_argument('-p', '--project', required=True)
     dp.add_argument('-c', '--component', default='*')
     dp.add_argument('-l', '--language', default='sv')
-
+    gl= subs.add_parser('glossary')
+    gl.add_argument('-p', '--project',)
+    gl.add_argument('-l', '--language', default='sv') 
+    gl.add_argument('-t', '--file_type',choices=['tbx', 'csv'],
+        help='Select file type: "tbx" or "csv".')
+    
     args = parser.parse_args()
 
     # Setup URL och token
@@ -216,9 +269,13 @@ def main():
         if args.weblate == 'odoo':
             url = "https://translate.odoo.com/api/"
             token = os.environ.get('ODOO_API_KEY')
+            glossary_project='odoo-glossaries'
+            glossary_component='odoo-main-glossary'
         elif args.weblate == 'oca':
             url = "https://translation.odoo-community.org/api/"
             token = os.environ.get('OCA_API_KEY')
+            glossary_project=args.project
+            glossary_component=f'{glossary_project}.glossary'
         else:
             url = args.url
             token = args.token
@@ -259,6 +316,9 @@ def main():
 
         elif args.command == 'download-multi':
             client.download_components_wildcard(args.project, args.component, args.language, args.output_dir)
+
+        elif args.command == 'glossary':
+            client.download_glossary(glossary_project, glossary_component,args.language, args.file_type)
 
         elif args.command == 'upload-multi':
             client.upload_files_wildcard(args.files, args.language, args.method)

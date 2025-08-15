@@ -5,14 +5,16 @@ LANG_CODE="sv"        # default språk
 TEST=""
 
 usage() { 
-    echo "Usage: $0 [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t]" 1>&2
+    echo "Usage: checkmodule [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t]" 1>&2
+    echo "   -d   Database, new database is createdInstall without demo-data"
     echo "   -D   Install without demo-data"
     echo "   -e   Export PO file(s) after installation"
     echo "   -L   Language code for PO export (default: sv)"
+    echo "   -t   Performe tests"
     exit 1
 }
 
-while getopts "d:m:l:DeL:" option; do
+while getopts "d:m:l:DeL:t" option; do
     case $option in
         d) ODOODB=${OPTARG} ;;
         m) ODOOMODULES=${OPTARG} ;;
@@ -33,8 +35,8 @@ while getopts "d:m:l:DeL:" option; do
 done
 
 if [ -z "$ODOOMODULES" ] || [ -z "$ODOODB" ]; then
-    echo "Both -d (database) and -m (modules) options are required" >&2
     usage
+    echo "Both -d (database) and -m (modules) options are required, new database is created" >&2
 fi
 
 # Installera moduler

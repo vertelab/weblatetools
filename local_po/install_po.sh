@@ -1,18 +1,30 @@
 #!/bin/bash
-
 DO_GIT=false
+PRESERVE=false
 
 if [ "$#" -lt 1 ]; then
-    echo "Usage: $0 [-g] file1.po [file2.po ...]"
-    echo "  -g    Kör git add/commit/push efter flytt"
+    echo "Usage: $0 [-g] [-p] file1.po [file2.po ...]"
+    echo "  -g    Perform git add/commit/push after move/copy"
+    echo "  -p    Preserve the po-file (copy instead of move)"
     exit 1
 fi
 
-# Kolla första argumentet
-if [ "$1" = "-g" ]; then
-    DO_GIT=true
+# Läs flaggor
+while [[ "$1" =~ ^- ]]; do
+    case "$1" in
+        -g)
+            DO_GIT=true
+            ;;
+        -p)
+            PRESERVE=true
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
     shift
-fi
+done
 
 for pofile in "$@"; do
     filename=$(basename "$pofile")
@@ -20,13 +32,11 @@ for pofile in "$@"; do
     # Försök matcha OdooNN-module-lang.po
     if [[ $filename =~ ^Odoo[0-9]+-([^-]+)-([a-z]{2}(_[A-Z]{2})?)\.po$ ]]; then
         module="${BASH_REMATCH[1]}"
-        lang="${BASH_REMATCH[2]}"
-
+        lang="${BASH_REMATCH}"
     # Annars anta module-lang.po
     elif [[ $filename =~ ^([^-]+)-([a-z]{2}(_[A-Z]{2})?)\.po$ ]]; then
-        module="${BASH_REMATCH[1]}"
-        lang="${BASH_REMATCH[2]}"
-
+        module="${BASH_REMATCH}"
+        lang="${BASH_REMATCH}"
     else
         echo "Filen '$filename' matchar inget känt mönster."
         continue
@@ -35,8 +45,7 @@ for pofile in "$@"; do
     echo "Fil: $filename  => Modul: $module, Språk: $lang"
 
     # Leta efter manifestfilen
-    paths=$(locate "$module/__manifest__.py" 2>/dev/null | grep '^/usr/share')
-
+    paths=$(locate "$module/**manifest**.py" 2>/dev/null | grep '^/usr/share')
     if [ -z "$paths" ]; then
         echo "  --> Modulkatalog för '$module' hittades inte under /usr/share."
         continue
@@ -53,9 +62,15 @@ for pofile in "$@"; do
         sudo chown odoo:odoo "$project_module/i18n"
     fi
 
-    # Flytta filen
-    sudo mv "$pofile" "$project_module/i18n/$lang.po"
-    echo "  --> File moved to $project_module/i18n/$lang.po"
+    target_file="$project_module/i18n/$lang.po"
+
+    if $PRESERVE; then
+        sudo cp "$pofile" "$target_file"
+        echo "  --> File copied to $target_file"
+    else
+        sudo mv "$pofile" "$target_file"
+        echo "  --> File moved to $target_file"
+    fi
 
     # Om git-funktionen är aktiv
     if $DO_GIT; then
@@ -72,3 +87,4 @@ for pofile in "$@"; do
 
     echo
 done
+

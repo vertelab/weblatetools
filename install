@@ -7,7 +7,7 @@
 #                                                                              #
 ################################################################################
 
-wget -O /tmp/requirements.txt https://raw.githubusercontent.com/vertel/weblate/requirements.txt
+wget -O /tmp/requirements.txt https://raw.githubusercontent.com/vertelab/weblatetools/refs/heads/main/requirements.txt
 sudo -H pip3 install --break-system-packages -r /tmp/requirements.txt
 rm -f /tmp/requirements.txt
 
