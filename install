@@ -8,7 +8,7 @@
 ################################################################################
 
 wget -O /tmp/requirements.txt https://raw.githubusercontent.com/vertel/weblate/requirements.txt
-sudo -H pip3 install -r /tmp/requirements.txt
+sudo -H pip3 install --break-system-packages -r /tmp/requirements.txt
 rm -f /tmp/requirements.txt
 
 # local_po
