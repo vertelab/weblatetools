@@ -59,7 +59,7 @@ Installs po-files on the local file system. Module is taken from the filename <p
 
 # Use cases
 
-###I want to translate sale* modules in Odoo core for Odoo 18 using the latest glossary
+__I want to translate sale* modules in Odoo core for Odoo 18 using the latest glossary__
 ```
 weblate_cli -w odoo glossary -t csv
 weblate_cli -w odoo -p odoo-18 deepl -g glossary.csv sale\*
@@ -86,7 +86,7 @@ Upload the traslation when it looks good
 weblate_cli -w odoo upload-multi *.po
 
 ```
-###I want to translate a local project odoo-ai that maybe is not translated yet using the latest glossary
+__I want to translate a local project odoo-ai that maybe is not translated yet using the latest glossary__
 ```
 missing_po -p odoo-ai -s,
 
