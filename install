@@ -1,0 +1,35 @@
+#!/bin/bash
+################################################################################
+#                                                                              #
+#   Installation of Translation tools                                          #
+#                                                                              #
+#                                                                              #
+#                                                                              #
+################################################################################
+
+wget -O /tmp/requirements.txt https://raw.githubusercontent.com/vertel/weblate/requirements.txt
+sudo -H pip3 install -r /tmp/requirements.txt
+rm -f /tmp/requirements.txt
+
+# local_po
+sudo wget -O /usr/local/bin/install_po https://raw.githubusercontent.com/vertelab/weblatetools/local_po/install_po.sh
+sudo chown root:root /usr/local/bin/install_po
+sudo chmod +x /usr/local/bin/install_po
+sudo wget -O /usr/local/bin/check_po https://raw.githubusercontent.com/vertelab/weblatetools/local_po/check_po.sh
+sudo chown root:root /usr/local/bin/check_po
+sudo chmod +x /usr/local/bin/check_po
+sudo wget -O /usr/local/bin/checkmodule https://raw.githubusercontent.com/vertelab/weblatetools/local_po/checkmodule.sh
+sudo chown root:root /usr/local/bin/checkmodule
+sudo chmod +x /usr/local/bin/checkmodule
+sudo wget -O /usr/local/bin/translate_po https://raw.githubusercontent.com/vertelab/weblatetools/local_po/translate_po.sh
+sudo chown root:root /usr/local/bin/translate_po
+sudo chmod +x /usr/local/bin/translate_po
+
+#weblate
+sudo wget -O /usr/local/bin/weblate_cli https://raw.githubusercontent.com/vertelab/weblatetools/weblate/weblate_cli.py
+sudo chown root:root /usr/local/bin/weblate_cli
+sudo chmod +x /usr/local/bin/weblate_cli
+
+
+
+

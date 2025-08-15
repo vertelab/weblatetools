@@ -2,9 +2,10 @@ LOG_LEVEL="warning"   # default log level
 WITH_DEMO=true        # default installera med demo-data
 EXPORT_PO=false       # default: ingen po-export
 LANG_CODE="sv"        # default språk
+TEST=""
 
 usage() { 
-    echo "Usage: $0 [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>]" 1>&2
+    echo "Usage: $0 [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t]" 1>&2
     echo "   -D   Install without demo-data"
     echo "   -e   Export PO file(s) after installation"
     echo "   -L   Language code for PO export (default: sv)"
@@ -23,7 +24,8 @@ while getopts "d:m:l:DeL:" option; do
             fi
             ;;
         D) WITH_DEMO=false ;;
-        e) EXPORT_PO=true ;;
+        e) EXPORT_PO=true ;;        
+        t) TEST="--test-enable" ;;
         L) LANG_CODE=${OPTARG} ;;
         :) echo "Option -$OPTARG requires an argument" >&2; usage ;;
         \?) echo "Invalid option: -$OPTARG" >&2; usage ;;
@@ -39,7 +41,7 @@ fi
 echo "Creating Odoo ${ODOODB} for Odoo ${ODOOMODULES} with log level ${LOG_LEVEL}"
 [ "$WITH_DEMO" = false ] && DEMO_OPTION="--without-demo=all" || DEMO_OPTION=""
 sudo service odoo stop
-sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --init ${ODOOMODULES} --limit-time-cpu=180 --limit-time-real=300 --stop-after-init --log-level=${LOG_LEVEL} ${DEMO_OPTION}"
+sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --init ${ODOOMODULES} ${TEST} --limit-time-cpu=180 --limit-time-real=300 --stop-after-init --log-level=${LOG_LEVEL} ${DEMO_OPTION}"
 
 # Exportera PO-filer om flaggan är satt
 if [ "$EXPORT_PO" = true ]; then
