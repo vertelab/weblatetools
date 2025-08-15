@@ -57,9 +57,9 @@ Installs po-files on the local file system. Module is taken from the filename <p
   -g    Perform git add/commit/push efter installation  
   -p    Preserv the po-file instead of moving it
 
-## Use cases
+# Use cases
 
-I want to translate sale* modules in Odoo core for Odoo 18 using the latest glossary
+###I want to translate sale* modules in Odoo core for Odoo 18 using the latest glossary
 ```
 weblate_cli -w odoo glossary -t csv
 weblate_cli -w odoo -p odoo-18 deepl -g glossary.csv sale\*
@@ -86,3 +86,42 @@ Upload the traslation when it looks good
 weblate_cli -w odoo upload-multi *.po
 
 ```
+###I want to translate a local project odoo-ai that maybe is not translated yet using the latest glossary
+```
+missing_po -p odoo-ai -s,
+
+```
+Copy the coma separated list to next command
+
+```
+checkmodule -d ai_database -m <modules from last command> -e -l critical 
+```
+Now you have a bunsh of po-files in your working directory. Use translate_po to translate using DEEPL and weblate_cli to get the latest glossary.
+
+```
+weblate_cli -w odoo glossary -t csv
+translate_po -g glossary.csv *.po
+
+```
+Now you have several po-files in your home directory to work with, there are a raw translation that have to be checkout.
+Use check_po to check and correct for usual errors. __poedit__ is a good editor for visually checkout the translation.
+
+```
+check_po -c *.po
+check_po -s *.po
+check_po -l *.po
+``````
+Install the po-files on the file system so you can use the new translation in Odoo. Use __checkmodule__ to visual the translation in Odoo.
+```
+install_po -p *.po
+checkmodule -d sale_translated -m <same old list of modules> -l critical 
+
+```
+Log in in the odoo instans sale_translated and checkout the translation visually
+Upload the traslation when it looks good
+
+```
+install_po -g *.po
+
+```
+Install_po can also update Git with the latest changes
