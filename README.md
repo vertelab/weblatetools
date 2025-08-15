@@ -127,6 +127,10 @@ install_po -g *.po
 Install_po can also update Git with the latest changes
 
 
+__I want to translate the contract-module using latest glossary for Odoo 18 in OCA__
+
+
+
 __I want to create a new glossary on OCA for project contract__
 
 1) download glossary from Odoo
