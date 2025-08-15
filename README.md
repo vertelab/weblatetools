@@ -29,32 +29,33 @@ options:
   -w {odoo,oca}, --weblate {odoo,oca}
                         Select Weblate instance: "odoo" or "oca". Reads token from ODOO_API_KEY or OCA_API_KEY env vars.
 
-__missing_po__ -p all|project [-l language] [-e] [-s ,|"\n" (default)]   List installed modules for missing .po-file 
-  -p <project|all>   Project required if not -e, all sets odoo-* as search pattern 
-  -l <language>      Language code (default: sv)
-  -e                 Sets project to odooext-* as search pattern
-  -s <separator>     Choose coma (,) or "\n" (new line, default) for listing
+__missing_po__ -p all|project [-l language] [-e] [-s ,|"\n" (default)]   List installed modules for missing .po-file   
+  -p <project|all>   Project required if not -e, all sets odoo-* as search pattern  
+  -l <language>      Language code (default: sv)  
+  -e                 Sets project to odooext-* as search pattern  
+  -s <separator>     Choose coma (,) or "\n" (new line, default) for listing  
 
-__checkmodule__ [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t]
-   -D   Install without demo-data
-   -e   Export PO file(s) after installation
-   -L   Language code for PO export (default: sv)
-   -t   Test enable
+__checkmodule__ [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t]  
+   -D   Install without demo-data  
+   -e   Export PO file(s) after installation  
+   -L   Language code for PO export (default: sv)  
+   -t   Test enable  
 
    Both -d (database) and -m (modules) options are required, if database is new its create
 
-__translate_po__ [-h] [-l LANGUAGE] [-g GLOSSARY] [--deepl-key DEEPL_KEY] po_files [po_files ...]
+__translate_po__ [-h] [-l LANGUAGE] [-g GLOSSARY] [--deepl-key DEEPL_KEY] po_files [po_files ...]  
 Translates one or several po-files using DEEPL  
-Use weblate_cli -w odoo glossary -t csv to download the latest glossary-file
+Use weblate_cli -w odoo glossary -t csv to download the latest glossary-file  
 
-__check_po__ -c/--correct -s/--status -l/--lint  *.po Check or correct po-files for common translations-error 
-  -l    List for common po-file errors
-  -s    Status for po-files
-  -c    Correct common po-file errors, eg translated varables and xml-tags
+__check_po__ -c/--correct -s/--status -l/--lint  *.po Check or correct po-files for common translations-error  
+  -l    List for common po-file errors  
+  -s    Status for po-files  
+  -c    Correct common po-file errors, eg translated varables and xml-tags  
 
-__install_po__ [-g] file1.po [file2.po ...]
-Installs po-files on the local file system. Module is taken from the filename <project>-<module>-<lang>.po or <module>-<lang>.po
-  -g    Perform git add/commit/push efter installation
+__install_po__ [-g] [-p] file1.po [file2.po ...]  
+Installs po-files on the local file system. Module is taken from the filename <project>-<module>-<lang>.po or <module>-<lang>.po  
+  -g    Perform git add/commit/push efter installation  
+  -p    Preserv the po-file instead of moving it
 
 ## Use cases
 
@@ -62,11 +63,27 @@ I want to translate sale* modules in Odoo core for Odoo 18 using the latest glos
 ```
 weblate_cli -w odoo glossary -t csv
 weblate_cli -w odoo -p odoo-18 deepl -g glossary.csv sale\*
+
+```
+Now you have several po-files in your home directory to work with, there are a raw translation that have to be checkout.
+Use check_po to check and correct for usual errors. __poedit__ is a good editor for visually checkout the translation.
+```
 check_po -c *.po
 check_po -s *.po
 check_po -l *.po
-install_po *.po
---- install in a Odoo-instans and do a visual check of the translation
+``````
+Install the po-files on the file system so you can use the new translation in Odoo. Use __checkmodule__ to visual the translation in Odoo.
+
+``````
+install_po -p *.po
+checkmodule -d sale_translated -m sale,sale_management,etc -l critical 
+
+```
+Log in in the odoo instans sale_translated and checkout the translation visually
+Upload the traslation when it looks good
+
+```
+install_po -p *.po
 weblate_cli -w odoo upload-multi *.po
 
 ```
