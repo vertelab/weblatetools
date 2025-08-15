@@ -83,7 +83,6 @@ Log in in the odoo instans sale_translated and checkout the translation visually
 Upload the traslation when it looks good
 
 ```
-install_po -p *.po
 weblate_cli -w odoo upload-multi *.po
 
 ```
