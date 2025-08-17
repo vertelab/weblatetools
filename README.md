@@ -68,33 +68,26 @@ We regard the glossary uploaded to Odoo as the main glossary. The hope is that n
 - **DeepL:** DeepL is a valuable tool for producing an initial rough translation of phrases. The translation quality improves if the current glossary is uploaded to DeepL, ensuring that the desired terminology is used.
 
 # Use cases
-
-__I want to translate sale* modules in Odoo core for Odoo 18 using the latest glossary__
+**I want to translate sale\* modules in Odoo core for Odoo 18 using the latest glossary**  
 ```
 weblate_cli -w odoo glossary -t csv
-weblate_cli -w odoo -p odoo-18 deepl -g glossary.csv sale\*
-
+weblate_cli -w odoo -p odoo-18 deepl -g glossary.csv sale*
 ```
-Now you have several po-files in your home directory to work with, there are a raw translation that have to be checkout.
-Use check_po to check and correct for usual errors. __poedit__ is a good editor for visually checkout the translation.
+You will now have several .po files in your home directory to work with—these are raw translations that need to be reviewed. DeepL is a valuable tool for generating initial rough translations of phrases, but it can also introduce errors, such as translating variables used in templates and XML tags. This is exactly what **check_po -c** is designed to detect and correct. Use check_po -l/-s for lint check and status. **Poedit** is a great editor for visually reviewing the translations.
+
 ```
 check_po -c *.po
 check_po -s *.po
 check_po -l *.po
-``````
-Install the po-files on the file system so you can use the new translation in Odoo. Use __checkmodule__ to visual the translation in Odoo.
-
+```
+Install the .po files on the filesystem so you can use the new translations in Odoo. Use **checkmodule** to visually inspect the translations within Odoo.  
 ```
 install_po -p *.po
-checkmodule -d sale_translated -m sale,sale_management,etc -l critical 
-
+checkmodule -d sale_translated -m sale,sale_management,etc -l critical
 ```
-Log in in the odoo instans sale_translated and checkout the translation visually
-Upload the traslation when it looks good
-
+Log in to the Odoo instance *sale_translated* and review the translations visually. When the translations look good, upload them:  
 ```
 weblate_cli -w odoo upload-multi *.po
-
 ```
 __I want to translate a local project odoo-ai that maybe is not translated yet using the latest glossary__
 ```
