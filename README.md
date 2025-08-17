@@ -4,10 +4,9 @@ Hacks for translations
 
 ## Prerequisites
 
-The installation scripts assume the host OS is Ubuntu 22.04. Usage on other
-systems might require tweaking to work.
-You need API-keys for Odoo (ODOO_API_KEY), Odoo Community Association (OCA_API_KEY) and DEEPL (DEEPL_AUTH_KEY)
-You can either use the key on command line or add it in environment, usually in .profile-file
+The installation scripts assume the host operating system is Ubuntu 22.04, and that Odoo along with its modules are installed locally on the filesystem using odootools. Using the scripts on other systems may require adjustments to function correctly.  
+
+You will need API keys for Odoo (ODOO_API_KEY), the Odoo Community Association (OCA_API_KEY), and DeepL (DEEPL_AUTH_KEY). These keys can be provided via the command line or added to your environment, typically in your `.profile` file.
 
 ## Install
 
