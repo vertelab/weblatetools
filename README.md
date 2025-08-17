@@ -1,5 +1,6 @@
-# weblatetools
-Hacks for translations
+# Weblate Tools
+
+Translation hacks. Starting with Odoo 18 in autumn 2025, Odoo SA has moved their translation server from Transifex to a self-hosted Weblate platform — the same system used by OCA. This set of tools simplifies working with translations across Odoo, OCA, and other module suppliers, making the entire process more streamlined and efficient. 
 
 
 ## Prerequisites
