@@ -63,6 +63,12 @@ Using a glossary when translating Odoo is essential. The consistent use of termi
 
 End users immediately notice the benefits in the form of precise and professional terminology, which elevates the perceived quality of the entire system. No matter which translation tool is used—such as Deepl, where a glossary can be uploaded for each translation—the glossary itself is the cornerstone of an efficient workflow and results that meet the highest standards. With this support in place, the translation team can work together to deliver a robust and user-friendly IT solution.
 
+We regard the glossary uploaded to Odoo as the main glossary. The hope is that new terms are given their translations here and that this forms the basis for new glossaries within OCA. It is important that the glossaries do not diverge.
+
+- **Odoo:** Has a central glossary used for the entire Odoo core. For each new release of Odoo, a separate glossary is created.
+- **OCA (Odoo Community Association):** Here, instead, each project has its own glossary. Each GitHub project with a set of modules is represented as a separate project for each Odoo release. Thus, every project can have its own specific terms. The method for creating a project glossary for the first time is to start from the terms in the main module, using terms already present in the central Odoo glossary. New terms not yet translated are translated and also added to the Odoo glossary.
+- **DeepL:** DeepL is a valuable tool for producing an initial rough translation of phrases. The translation quality improves if the current glossary is uploaded to DeepL, ensuring that the desired terminology is used.
+
 # Use cases
 
 __I want to translate sale* modules in Odoo core for Odoo 18 using the latest glossary__
