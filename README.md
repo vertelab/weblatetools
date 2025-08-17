@@ -61,8 +61,6 @@ Installs po-files on the local file system. Module is taken from the filename <p
 
 Using a glossary when translating Odoo is essential. The consistent use of terminology—whether in Odoo core, OCA, or modules from other suppliers—greatly influences the final result. A well-maintained glossary ensures translations are uniform and of high quality, while also allowing people from different companies to collaborate effortlessly. This shared linguistic foundation means everyone speaks the same language, making work faster, more cohesive, and better organized.
 
-End users immediately notice the benefits in the form of precise and professional terminology, which elevates the perceived quality of the entire system. No matter which translation tool is used—such as Deepl, where a glossary can be uploaded for each translation—the glossary itself is the cornerstone of an efficient workflow and results that meet the highest standards. With this support in place, the translation team can work together to deliver a robust and user-friendly IT solution.
-
 We regard the glossary uploaded to Odoo as the main glossary. The hope is that new terms are given their translations here and that this forms the basis for new glossaries within OCA. It is important that the glossaries do not diverge.
 
 - **Odoo:** Has a central glossary used for the entire Odoo core. For each new release of Odoo, a separate glossary is created.
