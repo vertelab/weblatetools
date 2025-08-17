@@ -48,7 +48,7 @@ Translates one or several po-files using DEEPL
 Use weblate_cli -w odoo glossary -t csv to download the latest glossary-file  
 
 __check_po__ -c/--correct -s/--status -l/--lint  *.po Check or correct po-files for common translations-error  
-  -l    List for common po-file errors  
+  -l    Lint-check for common po-file errors  
   -s    Status for po-files  
   -c    Correct common po-file errors, eg translated varables and xml-tags  
 
