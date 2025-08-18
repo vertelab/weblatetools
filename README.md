@@ -71,7 +71,7 @@ We regard the glossary uploaded to Odoo as the main glossary. The hope is that n
 **I want to translate sale\* modules in Odoo core for Odoo 18 using the latest glossary**  
 ```
 weblate_cli -w odoo glossary -t csv
-weblate_cli -w odoo -p odoo-18 deepl -g glossary.csv sale*
+weblate_cli -w odoo deepl -p odoo-18 -g glossary.csv -c sale*
 ```
 You will now have several .po files in your home directory to work with—these are raw translations that need to be reviewed. DeepL is a valuable tool for generating initial rough translations of phrases, but it can also introduce errors, such as translating variables used in templates and XML tags. This is exactly what **check_po -c** is designed to detect and correct. Use check_po -l/-s for lint check and status. **Poedit** is a great editor for visually reviewing the translations.
 
