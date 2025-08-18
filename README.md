@@ -1,13 +1,13 @@
-# weblatetools
-Hacks for translations
+# Weblate Tools
+
+Translation hacks. Starting with Odoo 18 in autumn 2025, Odoo SA has moved their translation server from Transifex to a self-hosted Weblate platform — the same system used by OCA. This set of tools simplifies working with translations across Odoo, OCA, and other module suppliers, making the entire process more streamlined and efficient. 
 
 
 ## Prerequisites
 
-The installation scripts assume the host OS is Ubuntu 22.04. Usage on other
-systems might require tweaking to work.
-You need API-keys for Odoo (ODOO_API_KEY), Odoo Community Association (OCA_API_KEY) and DEEPL (DEEPL_AUTH_KEY)
-You can either use the key on command line or add it in environment, usually in .profile-file
+The installation scripts assume the host operating system is Ubuntu 22.04, and that Odoo along with its modules are installed locally on the filesystem using odootools. Using the scripts on other systems may require adjustments to function correctly.  
+
+You will need API keys for Odoo (ODOO_API_KEY), the Odoo Community Association (OCA_API_KEY), and DeepL (DEEPL_AUTH_KEY). These keys can be provided via the command line or added to your environment, typically in your `.profile` file.
 
 ## Install
 
@@ -48,7 +48,7 @@ Translates one or several po-files using DEEPL
 Use weblate_cli -w odoo glossary -t csv to download the latest glossary-file  
 
 __check_po__ -c/--correct -s/--status -l/--lint  *.po Check or correct po-files for common translations-error  
-  -l    List for common po-file errors  
+  -l    Lint-check for common po-file errors  
   -s    Status for po-files  
   -c    Correct common po-file errors, eg translated varables and xml-tags  
 
@@ -57,34 +57,37 @@ Installs po-files on the local file system. Module is taken from the filename <p
   -g    Perform git add/commit/push efter installation  
   -p    Preserv the po-file instead of moving it
 
-# Use cases
+# Glossary
 
-__I want to translate sale* modules in Odoo core for Odoo 18 using the latest glossary__
+Using a glossary when translating Odoo is essential. The consistent use of terminology—whether in Odoo core, OCA, or modules from other suppliers—greatly influences the final result. A well-maintained glossary ensures translations are uniform and of high quality, while also allowing people from different companies to collaborate effortlessly. This shared linguistic foundation means everyone speaks the same language, making work faster, more cohesive, and better organized.
+
+We regard the glossary uploaded to Odoo as the main glossary. The hope is that new terms are given their translations here and that this forms the basis for new glossaries within OCA. It is important that the glossaries do not diverge.
+
+- **Odoo:** Has a central glossary used for the entire Odoo core. For each new release of Odoo, a separate glossary is created.
+- **OCA (Odoo Community Association):** Here, instead, each project has its own glossary. Each GitHub project with a set of modules is represented as a separate project for each Odoo release. Thus, every project can have its own specific terms. The method for creating a project glossary for the first time is to start from the terms in the main module, using terms already present in the central Odoo glossary. New terms not yet translated are translated and also added to the Odoo glossary.
+- **DeepL:** DeepL is a valuable tool for producing an initial rough translation of phrases. The translation quality improves if the current glossary is uploaded to DeepL, ensuring that the desired terminology is used.
+
+# Use cases
+**I want to translate sale\* modules in Odoo core for Odoo 18 using the latest glossary**  
 ```
 weblate_cli -w odoo glossary -t csv
-weblate_cli -w odoo -p odoo-18 deepl -g glossary.csv sale\*
-
+weblate_cli -w odoo -p odoo-18 deepl -g glossary.csv sale*
 ```
-Now you have several po-files in your home directory to work with, there are a raw translation that have to be checkout.
-Use check_po to check and correct for usual errors. __poedit__ is a good editor for visually checkout the translation.
+You will now have several .po files in your home directory to work with—these are raw translations that need to be reviewed. DeepL is a valuable tool for generating initial rough translations of phrases, but it can also introduce errors, such as translating variables used in templates and XML tags. This is exactly what **check_po -c** is designed to detect and correct. Use check_po -l/-s for lint check and status. **Poedit** is a great editor for visually reviewing the translations.
+
 ```
 check_po -c *.po
 check_po -s *.po
 check_po -l *.po
-``````
-Install the po-files on the file system so you can use the new translation in Odoo. Use __checkmodule__ to visual the translation in Odoo.
-
+```
+Install the .po files on the filesystem so you can use the new translations in Odoo. Use **checkmodule** to visually inspect the translations within Odoo.  
 ```
 install_po -p *.po
-checkmodule -d sale_translated -m sale,sale_management,etc -l critical 
-
+checkmodule -d sale_translated -m sale,sale_management,etc -l critical
 ```
-Log in in the odoo instans sale_translated and checkout the translation visually
-Upload the traslation when it looks good
-
+Log in to the Odoo instance *sale_translated* and review the translations visually. When the translations look good, upload them:  
 ```
 weblate_cli -w odoo upload-multi *.po
-
 ```
 __I want to translate a local project odoo-ai that maybe is not translated yet using the latest glossary__
 ```
@@ -125,3 +128,24 @@ install_po -g *.po
 
 ```
 Install_po can also update Git with the latest changes
+
+
+__I want to translate the contract-module using latest glossary for Odoo 18 in OCA__
+
+
+
+__I want to create a new glossary on OCA for project contract__
+
+1) download glossary from Odoo
+2) Download po-file from largest/main-module in OCA
+3) merge odoo-glossary with po-file
+4) translate missing words using translate_po
+5) upload new oca-glossary
+
+__I want to create language-file for missing modules in OCA__
+
+1) missing_po -w oca (list links to weblate)
+2) Use the link to weblate and create the file
+
+
+
