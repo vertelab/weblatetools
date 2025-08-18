@@ -24,20 +24,49 @@ class WeblateWLCClient:
         self.api_token = api_token
         self.client = wlc.Weblate(url=base_url, key=api_token)
 
+    def _get_all_pages(self, endpoint):
+        """Hämtar alla sidor från Weblate API (följ 'next' tills slutet)."""
+        url = endpoint
+        results = []
+        while url:
+            data = self.client.get(url)
+            results.extend(data.get("results", []))
+            url = data.get("next")
+            if url:
+                # om API returnerar full URL, gör om till relativ path
+                url = url.replace(self.client.url, "")
+        return results
+
     def list_projects(self):
-        return self.client.get("projects/")
+        return self._get_all_pages("projects/")
 
     def list_components(self, project_slug):
-        return self.client.get(f"projects/{project_slug}/components/")
+        return self._get_all_pages(f"projects/{project_slug}/components/")
 
     def list_translations(self, project_slug, component_slug):
-        return self.client.get(f"components/{project_slug}/{component_slug}/translations/")
+        return self._get_all_pages(f"components/{project_slug}/{component_slug}/translations/")
+
+    # ~ def list_all_project_slugs(self):
+        # ~ return [p['slug'] for p in self.list_projects()]
+
+    # ~ def list_component_slugs(self, project_slug):
+        # ~ return [c['slug'] for c in self.list_components(project_slug)]
+
+    # ~ def list_projects(self,projects=''):
+        # ~ logger.warning(f"Project {projects}")
+        # ~ return self.client.get(f"projects/{projects}")
+
+    # ~ def list_components(self, project_slug):
+        # ~ return self.client.get(f"projects/{project_slug}/components/")
+
+    # ~ def list_translations(self, project_slug, component_slug):
+        # ~ return self.client.get(f"components/{project_slug}/{component_slug}/translations/")
 
     def list_all_project_slugs(self):
-        return [p['slug'] for p in self.list_projects().get('results', [])]
+        return [p['slug'] for p in self.list_projects()]
 
     def list_component_slugs(self, project_slug):
-        return [c['slug'] for c in self.list_components(project_slug).get('results', [])]
+        return [c['slug'] for c in self.list_components(project_slug)]
 
     def download_po_file(self, project_slug, component_slug, language_code, output_path):
         # Lägg till token i headern så att API tillåter hämtning
@@ -224,9 +253,10 @@ def main():
 
     # Subcommands
     subs = parser.add_subparsers(dest='command')
-    subs.add_parser('list-projects')
+    pl =subs.add_parser('list-projects')
+    pl.add_argument('-p','--project')
     lc = subs.add_parser('list-components')
-    lc.add_argument('project')
+    lc.add_argument('-p','--project')
     lt = subs.add_parser('list-translations')
     lt.add_argument('project')
     lt.add_argument('component')
@@ -298,7 +328,9 @@ def main():
     # Kör valt kommando
     try:
         if args.command == 'list-projects':
-            print("\n".join(client.list_all_project_slugs()))
+            print("\n".join([proj['slug'] for proj in client.list_projects()]))
+            # ~ print("\n".join(client.list_all_project_slugs(projects=args.project)))
+            # ~ print("\n".join(client.list_projects()))
 
         elif args.command == 'list-components':
             print("\n".join(client.list_component_slugs(args.project)))
