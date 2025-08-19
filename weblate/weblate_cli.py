@@ -133,6 +133,7 @@ class WeblateWLCClient:
         with open(file_path, "rb") as f:
             files = {"file": (os.path.basename(file_path), f, "application/x-gettext")}
             data = {"method": method}
+            logger.info(f"Uploading {file_path} to {project_slug}/{component_slug}/{language_code} using method '{method}'")
             self.client.post(
                 f"translations/{project_slug}/{component_slug}/{language_code}/file/",
                 files=files, data=data
@@ -240,10 +241,10 @@ def deepl_command(client, deepl_key, proj_pat, comp_pat, lang, glossary_path=Non
     for po_file in files:
         translated_file = deepl_trans.translate_po_file(po_file, target_lang=lang.upper())
         base = os.path.basename(translated_file).rsplit('.', 1)[0]
-        parts = base.split('-')
-        project = parts[0]
-        component = '-'.join(parts[1:-1])
-        client.upload_po_file(project, component, lang, translated_file, method='translate')
+        #parts = base.split('-')
+        #project = parts[0]
+        #component = '-'.join(parts[1:-1])
+        #client.upload_po_file(project, component, lang, translated_file, method='translate')
 
 def main():
     parser = argparse.ArgumentParser(description='CLI for Weblate .po management + DeepL')
