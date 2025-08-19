@@ -468,7 +468,7 @@ for file in "${FILES[@]}"; do
         dennis-cmd lint "$file"
     fi
     if $DO_STATUS; then
-        dennis-status lint "$file"
+        dennis-cmd status "$file"
     fi
 done
 
