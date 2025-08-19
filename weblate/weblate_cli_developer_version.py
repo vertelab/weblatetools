@@ -100,6 +100,7 @@ class DeepLTranslator:
             raise ValueError("DeepL API key required")
         self.translator = deepl.Translator(deepl_auth_key)
         self.glossary_id = None
+        self.glossary = None  # Store glossary object for later use
 
     def upload_glossary_from_csv(self, csv_path, source_lang="EN", target_lang="SV"):
         entries = {}
@@ -114,7 +115,8 @@ class DeepLTranslator:
             entries=entries
         )
         self.glossary_id = glossary.id
-        logger.info(f"Glossary created id={self.glossary_id}, entries={len(entries)}")
+        self.glossary = glossary
+        logger.info(f"GlossaryInfo {self.glossary} created with id={self.glossary_id}, entries={len(entries)}")
         return self.glossary_id
 
     def translate_po_file(self, po_path, target_lang="SV"):
@@ -130,7 +132,10 @@ class DeepLTranslator:
             batch = to_translate[i:i+batch_size]
             if self.glossary_id:
                 res = self.translator.translate_text_with_glossary(
-                    batch, target_lang=target_lang, glossary_id=self.glossary_id
+                    batch, 
+                    target_lang=target_lang, 
+                    #glossary_id=self.glossary_id
+                    glossary=self.glossary
                 )
             else:
                 res = self.translator.translate_text(batch, target_lang=target_lang)
