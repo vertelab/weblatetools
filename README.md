@@ -152,6 +152,12 @@ Log in to the Odoo instance *sale_translated* and review the translations visual
 weblate_cli -w oca upload-multi *.po
 ```
 
+__I want to create missing po-files on OCA for project contract__
+```
+missing_po -s oca -p contract-18-0
+```
+
+
 
 
 __I want to create a new glossary on OCA for project contract__
