@@ -3,6 +3,7 @@
 DO_TR=false
 DO_LINT=false
 DO_STATUS=false
+DO_GLOSSARY=""
 
 # Hantera parametrar
 while [[ "$#" -gt 0 ]]; do
@@ -10,6 +11,7 @@ while [[ "$#" -gt 0 ]]; do
         -c) DO_TR=true ;;
         -l|--lint) DO_LINT=true ;;
         -s|--status) DO_STATUS=true ;;
+        -g|--glossary) DO_GLOSSARY=true ;;
         *.po) FILES+=("$1") ;;
     esac
     shift
@@ -469,6 +471,9 @@ for file in "${FILES[@]}"; do
     fi
     if $DO_STATUS; then
         dennis-status lint "$file"
+    fi
+    if [ -f "$DO_GLOSSARY"] ; then
+        glossary_check -g $DO_GLOSSARY "$file"
     fi
 done
 
