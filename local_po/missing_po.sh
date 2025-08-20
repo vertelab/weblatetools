@@ -15,12 +15,12 @@ usage() {
 }
 
 # Hantera flaggor
-while getopts p:l:es: option
+while getopts p:l:e:s: option
 do
    case "${option}" in
      p) ODOOPROJECT=${OPTARG};;
      l) LANG=${OPTARG};;
-     e) ODOOPROJECT="odooext-*";;
+     e) ODOOPROJECT="odooext-${OPTARG}*";;
      s) SEPARATOR=${OPTARG};;
      *) usage;;
    esac
@@ -37,6 +37,8 @@ if [ "$ODOOPROJECT" = "all" ]; then
     ODOOPROJECT="odoo-*"
 fi
 
+ODOO_VERSION=$(odoo --version | awk '{print $3}' | cut -d'.' -f1)
+
 echo "Search for missing '$LANG.po' in $ODOOPROJECT..."
 BASE_PATH="/usr/share/${ODOOPROJECT}/*"
 MODULELIST=""
@@ -45,10 +47,18 @@ for dir in $BASE_PATH; do
     if [ -d "$dir" ]; then
        if [ ! -f "$dir/i18n/$LANG.po" ]; then
             modname=$(basename "$dir")
-            if [ -z "$MODULELIST" ]; then
-                MODULELIST="$modname"
+            # Extrahera modulbasnamn efter "odooext-OCA-"
+            OCA_path=$(echo "$dir" | sed -E 's#.*/odooext-OCA-([^/]+)/.*#\1#')
+            if [ ! -z "$OCA_path" ]; then 
+                # Bygg URL
+                OCA_URL="https://translation.odoo-community.org/projects/${OCA_path}-${ODOO_VERSION}-0/${OCA_path}-${ODOO_VERSION}-0-${modname}/"
+                echo "$OCA_URL"
             else
-                MODULELIST="$MODULELIST"$SEPARATOR"$modname"
+                if [ -z "$MODULELIST" ]; then
+                    MODULELIST="$modname"
+                else
+                    MODULELIST="$MODULELIST"$SEPARATOR"$modname"
+                fi
             fi
         fi
     fi

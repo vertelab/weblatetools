@@ -71,7 +71,7 @@ We regard the glossary uploaded to Odoo as the main glossary. The hope is that n
 **I want to translate sale\* modules in Odoo core for Odoo 18 using the latest glossary**  
 ```
 weblate_cli -w odoo glossary -t csv
-weblate_cli -w odoo -p odoo-18 deepl -g glossary.csv sale*
+weblate_cli -w odoo deepl -p odoo-18 -g glossary.csv -c sale*
 ```
 You will now have several .po files in your home directory to work with—these are raw translations that need to be reviewed. DeepL is a valuable tool for generating initial rough translations of phrases, but it can also introduce errors, such as translating variables used in templates and XML tags. This is exactly what **check_po -c** is designed to detect and correct. Use check_po -l/-s for lint check and status. **Poedit** is a great editor for visually reviewing the translations.
 
@@ -117,7 +117,7 @@ check_po -l *.po
 Install the po-files on the file system so you can use the new translation in Odoo. Use __checkmodule__ to visual the translation in Odoo.
 ```
 install_po -p *.po
-checkmodule -d sale_translated -m <same old list of modules> -l critical 
+checkmodule -d ai_database2 -m <same old list of modules> -l critical 
 
 ```
 Log in in the odoo instans sale_translated and checkout the translation visually
@@ -131,6 +131,32 @@ Install_po can also update Git with the latest changes
 
 
 __I want to translate the contract-module using latest glossary for Odoo 18 in OCA__
+```
+weblate_cli -w oca glossary -p contract-18-0 -t csv
+weblate_cli -w odoo deepl -p contract-18-0 -g glossary.csv -c contract-18.0-contract
+```
+You will now have several .po files in your home directory to work with—these are raw translations that need to be reviewed. DeepL is a valuable tool for generating initial rough translations of phrases, but it can also introduce errors, such as translating variables used in templates and XML tags. This is exactly what **check_po -c** is designed to detect and correct. Use check_po -l/-s for lint check and status. **Poedit** is a great editor for visually reviewing the translations.
+
+```
+check_po -c *.po
+check_po -s *.po
+check_po -l *.po
+```
+Install the .po files on the filesystem so you can use the new translations in Odoo. Use **checkmodule** to visually inspect the translations within Odoo.  
+```
+install_po -p *.po
+checkmodule -d contract -m contract -l critical
+```
+Log in to the Odoo instance *sale_translated* and review the translations visually. When the translations look good, upload them:  
+```
+weblate_cli -w oca upload-multi *.po
+```
+
+__I want to create missing po-files on OCA for project contract__
+```
+missing_po -s oca -p contract-18-0
+```
+
 
 
 

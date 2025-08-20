@@ -470,7 +470,7 @@ for file in "${FILES[@]}"; do
         dennis-cmd lint "$file"
     fi
     if $DO_STATUS; then
-        dennis-status lint "$file"
+        dennis-cmd status "$file"
     fi
     if [ -f "$DO_GLOSSARY"] ; then
         glossary_check -g $DO_GLOSSARY "$file"

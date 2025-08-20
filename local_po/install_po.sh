@@ -30,13 +30,12 @@ for pofile in "$@"; do
     filename=$(basename "$pofile")
 
     # Försök matcha OdooNN-module-lang.po
-    if [[ $filename =~ ^Odoo[0-9]+-([^-]+)-([a-z]{2}(_[A-Z]{2})?)\.po$ ]]; then
+    if [[ $filename =~ ^[Oo]doo-[0-9]+-(.+)-([a-z]{2}(_[A-Z]{2})?)\.po$ ]]; then
         module="${BASH_REMATCH[1]}"
-        lang="${BASH_REMATCH}"
-    # Annars anta module-lang.po
-    elif [[ $filename =~ ^([^-]+)-([a-z]{2}(_[A-Z]{2})?)\.po$ ]]; then
-        module="${BASH_REMATCH}"
-        lang="${BASH_REMATCH}"
+        lang="${BASH_REMATCH[2]}"  
+    elif [[ $filename =~ ^(.+)-([a-z]{2}(_[A-Z]{2})?)\.po$ ]]; then
+        module="${BASH_REMATCH[1]}" 
+        lang="${BASH_REMATCH[2]}"   
     else
         echo "Filen '$filename' matchar inget känt mönster."
         continue

@@ -133,6 +133,7 @@ class WeblateWLCClient:
         with open(file_path, "rb") as f:
             files = {"file": (os.path.basename(file_path), f, "application/x-gettext")}
             data = {"method": method}
+            logger.info(f"Uploading {file_path} to {project_slug}/{component_slug}/{language_code} using method '{method}'")
             self.client.post(
                 f"translations/{project_slug}/{component_slug}/{language_code}/file/",
                 files=files, data=data
@@ -180,6 +181,7 @@ class DeepLTranslator:
             raise ValueError("DeepL API key required")
         self.translator = deepl.Translator(deepl_auth_key)
         self.glossary_id = None
+        self.glossary = None  # Store glossary object for later use
 
     def upload_glossary_from_csv(self, csv_path, source_lang="EN", target_lang="SV"):
         entries = {}
@@ -193,8 +195,9 @@ class DeepLTranslator:
             target_lang=target_lang,
             entries=entries
         )
-        self.glossary_id = glossary.id
-        logger.info(f"Glossary created id={self.glossary_id}, entries={len(entries)}")
+        self.glossary_id = glossary.glossary_id # glossary.id
+        self.glossary = glossary
+        logger.info(f"GlossaryInfo {self.glossary} created with id={self.glossary_id}, entries={len(entries)}")
         return self.glossary_id
 
     def translate_po_file(self, po_path, target_lang="SV"):
@@ -209,7 +212,10 @@ class DeepLTranslator:
             batch = to_translate[i:i+batch_size]
             if self.glossary_id:
                 res = self.translator.translate_text_with_glossary(
-                    batch, target_lang=target_lang, glossary_id=self.glossary_id
+                    batch, 
+                    target_lang=target_lang, 
+                    #glossary_id=self.glossary_id
+                    glossary=self.glossary
                 )
             else:
                 res = self.translator.translate_text(batch, target_lang=target_lang)
@@ -235,10 +241,10 @@ def deepl_command(client, deepl_key, proj_pat, comp_pat, lang, glossary_path=Non
     for po_file in files:
         translated_file = deepl_trans.translate_po_file(po_file, target_lang=lang.upper())
         base = os.path.basename(translated_file).rsplit('.', 1)[0]
-        parts = base.split('-')
-        project = parts[0]
-        component = '-'.join(parts[1:-1])
-        client.upload_po_file(project, component, lang, translated_file, method='translate')
+        #parts = base.split('-')
+        #project = parts[0]
+        #component = '-'.join(parts[1:-1])
+        #client.upload_po_file(project, component, lang, translated_file, method='translate')
 
 def main():
     parser = argparse.ArgumentParser(description='CLI for Weblate .po management + DeepL')
