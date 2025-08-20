@@ -49,9 +49,9 @@ for dir in $BASE_PATH; do
             modname=$(basename "$dir")
             # Extrahera modulbasnamn efter "odooext-OCA-"
             OCA_path=$(echo "$dir" | sed -E 's#.*/odooext-OCA-([^/]+)/.*#\1#')
-            if [ ! -z "$OCA_path" ]: then 
+            if [ ! -z "$OCA_path" ]; then 
                 # Bygg URL
-                OCA_URL="https://translation.odoo-community.org/projects/${OCA_path}-${ODOO_VERSION}-0/${OCA_path}-${ODOO_VERSION}-0-${module_name}/"
+                OCA_URL="https://translation.odoo-community.org/projects/${OCA_path}-${ODOO_VERSION}-0/${OCA_path}-${ODOO_VERSION}-0-${modname}/"
                 echo "$OCA_URL"
             else
                 if [ -z "$MODULELIST" ]; then
