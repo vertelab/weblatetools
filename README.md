@@ -118,6 +118,7 @@ Use check_po to check and correct for usual errors. __poedit__ is a good editor 
 check_po -c *.po
 check_po -s *.po
 check_po -l *.po
+check_po -g glossary.csv *.po
 ``````
 Install the po-files on the file system so you can use the new translation in Odoo. Use __checkmodule__ to visual the translation in Odoo.
 ```
@@ -146,6 +147,7 @@ You will now have several .po files in your home directory to work with—these 
 check_po -c *.po
 check_po -s *.po
 check_po -l *.po
+check_po -g glossary.csv *.po
 ```
 Install the .po files on the filesystem so you can use the new translations in Odoo. Use **checkmodule** to visually inspect the translations within Odoo.  
 ```
