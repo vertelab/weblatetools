@@ -57,7 +57,7 @@ Installs po-files on the local file system. Module is taken from the filename <p
   -g    Perform git add/commit/push efter installation  
   -p    Preserv the po-file instead of moving it
 
-__glossary_check__ [-h] -g GLOSSARY po-files [files.po ...]
+__glossary_check__ [-h] -g GLOSSARY po-files [files.po ...]  
 Checks po-files for occurance of glossary-words and how they are translated, lists anomalies
 
 
