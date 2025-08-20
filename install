@@ -27,6 +27,12 @@ sudo chmod +x /usr/local/bin/translate_po
 sudo wget -O /usr/local/bin/missing_po https://raw.githubusercontent.com/vertelab/weblatetools/refs/heads/main/local_po/missing_po.sh
 sudo chown root:root /usr/local/bin/missing_po
 sudo chmod +x /usr/local/bin/missing_po
+sudo wget -O /usr/local/bin/glossary_check https://raw.githubusercontent.com/vertelab/weblatetools/refs/heads/main/local_po/glossary_check.sh
+sudo chown root:root /usr/local/bin/glossary_check
+sudo chmod +x /usr/local/bin/glossary_check
+sudo wget -O /usr/local/bin/glossary_merge https://raw.githubusercontent.com/vertelab/weblatetools/refs/heads/main/local_po/glossary_merge.sh
+sudo chown root:root /usr/local/bin/glossary_merge
+sudo chmod +x /usr/local/bin/glossary_merge
 
 #weblate
 sudo wget -O /usr/local/bin/weblate_cli https://raw.githubusercontent.com/vertelab/weblatetools//refs/heads/main/weblate/weblate_cli.py
