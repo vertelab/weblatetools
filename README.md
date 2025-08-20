@@ -117,7 +117,7 @@ check_po -l *.po
 Install the po-files on the file system so you can use the new translation in Odoo. Use __checkmodule__ to visual the translation in Odoo.
 ```
 install_po -p *.po
-checkmodule -d sale_translated -m <same old list of modules> -l critical 
+checkmodule -d ai_database2 -m <same old list of modules> -l critical 
 
 ```
 Log in in the odoo instans sale_translated and checkout the translation visually
