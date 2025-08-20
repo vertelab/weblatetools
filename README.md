@@ -57,6 +57,10 @@ Installs po-files on the local file system. Module is taken from the filename <p
   -g    Perform git add/commit/push efter installation  
   -p    Preserv the po-file instead of moving it
 
+__glossary_check__ [-h] -g GLOSSARY po-files [files.po ...]
+Checks po-files for occurance of glossary-words and how they are translated, lists anomalies
+
+
 # Glossary
 
 Using a glossary when translating Odoo is essential. The consistent use of terminology—whether in Odoo core, OCA, or modules from other suppliers—greatly influences the final result. A well-maintained glossary ensures translations are uniform and of high quality, while also allowing people from different companies to collaborate effortlessly. This shared linguistic foundation means everyone speaks the same language, making work faster, more cohesive, and better organized.
