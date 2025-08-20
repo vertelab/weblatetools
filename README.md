@@ -160,6 +160,11 @@ weblate_cli -w oca upload-multi *.po
 ```
 
 __I want to create missing po-files on OCA for project contract__
+
+Odoo creats empty po-files for each language and modules, but OCA does not. So you have to add each missing po-file on the Weblate website. Missing_po command can create
+a list of links directly to the OCA weblate site so its easy to create an empty po-file for your language. When the po-file is created you can download it and translate it as usual.
+
+
 ```
 missing_po -s oca -p contract-18-0
 ```
