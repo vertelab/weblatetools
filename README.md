@@ -97,10 +97,6 @@ weblate_cli -w odoo upload-multi *.po
 __I want to translate a local project odoo-ai that maybe is not translated yet using the latest glossary__
 ```
 missing_po -p odoo-ai -s,
-
-missing_po -e OCA -p rest-framework -s,
-Letar efter saknade po-filer 'sv.po' i moduler under '/usr/share/odooext-OCA-rest-framework'...
-
 ```
 Copy the coma separated list to next command
 
