@@ -1,19 +1,15 @@
 #!/bin/bash
-
 LANG="sv"
-NAMESPACE=""
-PROJECT=""
-SEPARATOR=$'\n'
-MODULELIST=""
-ODOO_VERSION=$(odoo --version | awk '{print $3}' | cut -d'.' -f1)
+ODOOPROJECT=""
+SEPARATOR="\n"
 
 usage() {
-    echo "Usage: $0 -p project [-e namespace] [-l language] [-s separator]"
+    echo 'Usage: $0 -p all|project [-l language] [-e] [-s ,|"\n" (default)]'
     echo
-    echo "  -p <project>       Project name required"
-    echo "  -e <namespace>     Namespace (optional, e.g. OCA)"
+    echo "  -p <project|all>   Project required if not -e, all sets odoo-* as search pattern "
     echo "  -l <language>      Language code (default: sv)"
-    echo "  -s <separator>     Separator for module list output (default: newline)"
+    echo "  -e                 Sets project to odooext-* as search pattern"
+    echo '  -s <separator>     Choose coma (,) or "\n" (new line, default)'
     echo
     exit 1
 }
@@ -22,45 +18,39 @@ usage() {
 while getopts p:l:e:s: option
 do
    case "${option}" in
-     p) PROJECT=${OPTARG};;
+     p) ODOOPROJECT=${OPTARG};;
      l) LANG=${OPTARG};;
-     e) NAMESPACE=${OPTARG};;
+     e) ODOOPROJECT="odooext-${OPTARG}*";;
      s) SEPARATOR=${OPTARG};;
      *) usage;;
    esac
 done
 
-# Kontrollera att projekt är satt
-if [ -z "$PROJECT" ]; then
-    echo "Fel: Du måste ange projekt med -p."
+# Kontroll om -p eller -e använts
+if [ -z "$ODOOPROJECT" ]; then
+    echo "Fel: Du måste ange -p eller -e."
     usage
 fi
 
-# Bygg basväg till projektet beroende på namespace
-if [ -z "$NAMESPACE" ]; then
-    BASE_PATH="/usr/share/odoo-${PROJECT}"
-else
-    BASE_PATH="/usr/share/odooext-${NAMESPACE}-${PROJECT}"
+# Om -p all används → sätt mönstret till odoo-*
+if [ "$ODOOPROJECT" = "all" ]; then
+    ODOOPROJECT="odoo-*"
 fi
 
-if [ ! -d "$BASE_PATH" ]; then
-    echo "Fel: katalogen '$BASE_PATH' finns inte."
-    exit 1
-fi
+ODOO_VERSION=$(odoo --version | awk '{print $3}' | cut -d'.' -f1)
 
-echo "Letar efter saknade po-filer '$LANG.po' i moduler under '$BASE_PATH'..."
+echo "Search for missing '$LANG.po' in $ODOOPROJECT..."
+BASE_PATH="/usr/share/${ODOOPROJECT}/*"
+MODULELIST=""
 
-for dir in "$BASE_PATH"/*; do
+for dir in $BASE_PATH; do
     if [ -d "$dir" ]; then
-        if [ ! -f "$dir/i18n/$LANG.po" ]; then
+       if [ ! -f "$dir/i18n/$LANG.po" ]; then
             modname=$(basename "$dir")
-            if [ ! -z "$NAMESPACE" ] && [ "$NAMESPACE" = "OCA" ]; then
-                # Extrahera OCA-path (namespace) för länkbygge
-                OCA_path=$(echo "$dir" | sed -E 's#.*/odooext-OCA-([^/]+)/.*#\1#')
-                # Fallback om extrahering inte funkar, använd project-namnet
-                if [ -z "$OCA_path" ]; then
-                    OCA_path=$PROJECT
-                fi
+            # Extrahera modulbasnamn efter "odooext-OCA-"
+            OCA_path=$(echo "$dir" | sed -E 's#.*/odooext-OCA-([^/]+)/.*#\1#')
+            if [ ! -z "$OCA_path" ]; then 
+                # Bygg URL
                 OCA_URL="https://translation.odoo-community.org/projects/${OCA_path}-${ODOO_VERSION}-0/${OCA_path}-${ODOO_VERSION}-0-${modname}/"
                 echo "$OCA_URL"
             else
@@ -74,8 +64,4 @@ for dir in "$BASE_PATH"/*; do
     fi
 done
 
-if [ ! -z "$MODULELIST" ]; then
-    echo -e "$MODULELIST"
-elif [ -z "$NAMESPACE" ] || [ "$NAMESPACE" != "OCA" ]; then
-    echo "Alla moduler har po-filer för språket '$LANG'."
-fi
+echo -e "$MODULELIST"
