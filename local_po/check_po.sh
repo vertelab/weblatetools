@@ -94,7 +94,11 @@ for file in "${FILES[@]}"; do
         tr_phrase "{faktureringstyp}" "{invoicing_type}"
         tr_phrase "{produkt}" "{product}"
         tr_phrase "{återkommande_regel}" "{recurring_rule}"
-
+        
+        ## module: sale_timesheet_enterprise
+        tr_phrase "%(Måttenhet)s:" "%(allocated_hours)s:"
+        tr_phrase "%(tilldelade_timmar)s:" "%(account_source_name)s:"
+        
         ## account
         tr_phrase "{konto_källnamn}" "{account_source_name}"
         tr_phrase "{konto_målnamn}" "{account_target_name}"
