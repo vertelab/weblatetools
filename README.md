@@ -74,10 +74,10 @@ We regard the glossary uploaded to Odoo as the main glossary. The hope is that n
 # Use cases
 **I want to translate CE-modules in Odoo core for Odoo 18 using the latest glossary**
 
-I start with preparing a list of modules to translate
-jakob@odooutv18:/usr/share/core-odoo/addons$ sudo -s
-root@odooutv18:/usr/lib/python3/dist-packages/odoo/addons# cd /usr/share/core-odoo/addons
-root@odooutv18:/usr/share/core-odoo/addons# ls > list_modules.txt
+I start with preparing a list of modules to translate <br>
+jakob@odooutv18:/usr/share/core-odoo/addons$ sudo -s <br>
+root@odooutv18:/usr/lib/python3/dist-packages/odoo/addons# cd /usr/share/core-odoo/addons <br>
+root@odooutv18:/usr/share/core-odoo/addons# ls > list_modules.txt <br>
 
 - I move this list to my user.
 - I edit the list and remove all l10n_xxx modules but save l10n_se for translation.
