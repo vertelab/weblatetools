@@ -72,10 +72,20 @@ We regard the glossary uploaded to Odoo as the main glossary. The hope is that n
 - **DeepL:** DeepL is a valuable tool for producing an initial rough translation of phrases. The translation quality improves if the current glossary is uploaded to DeepL, ensuring that the desired terminology is used.
 
 # Use cases
-**I want to translate sale\* modules in Odoo core for Odoo 18 using the latest glossary**  
+**I want to translate CE-modules in Odoo core for Odoo 18 using the latest glossary**
+
+I start with preparing a list of modules to translate
+jakob@odooutv18:/usr/share/core-odoo/addons$ sudo -s
+root@odooutv18:/usr/lib/python3/dist-packages/odoo/addons# cd /usr/share/core-odoo/addons
+root@odooutv18:/usr/share/core-odoo/addons# ls > list_modules.txt
+
+- I move this list to my user.
+- I edit the list and remove all l10n_xxx modules but save l10n_se for translation.
+- For single translation I type account, for bulk translation I type account*. 
+
 ```
 weblate_cli -w odoo glossary -t csv
-weblate_cli -w odoo deepl -p odoo-18 -g glossary.csv -c sale*
+weblate_cli -w odoo deepl -p odoo-18 -g glossary.csv -c account
 ```
 You will now have several .po files in your home directory to work with—these are raw translations that need to be reviewed. DeepL is a valuable tool for generating initial rough translations of phrases, but it can also introduce errors, such as translating variables used in templates and XML tags. This is exactly what **check_po -c** is designed to detect and correct. Use check_po -l/-s for lint check and status. **Poedit** is a great editor for visually reviewing the translations.
 
