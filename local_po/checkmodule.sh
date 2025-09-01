@@ -57,7 +57,11 @@ fi
 # Installera moduler
 echo "Creating Odoo ${ODOODB} for Odoo ${ODOOMODULES} with log level ${LOG_LEVEL}"
 [ "$WITH_DEMO" = false ] && DEMO_OPTION="--without-demo=all" || DEMO_OPTION=""
-sudo service odoo stop
+
+if [ -z "$MULTI_USER" ]; then
+    sudo service odoo stop
+fi
+
 sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --init ${ODOOMODULES} ${MULTI_USER} ${TEST} --limit-time-cpu=180 --limit-time-real=300 --stop-after-init --log-level=${LOG_LEVEL} ${DEMO_OPTION}"
 
 # Exportera PO-filer om flaggan är satt
@@ -73,10 +77,12 @@ if [ "$EXPORT_PO" = true ]; then
 fi
 
 if [ "$DROP_DB" = true ]; then
-    dropdb $2
+    sudo -u postgres dropdb $ODOODB
 fi
 
-sudo service odoo start
+if [ -z "$MULTI_USER" ]; then
+    sudo service odoo start
+fi
 
 
 
