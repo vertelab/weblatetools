@@ -72,7 +72,7 @@ if [ "$EXPORT_PO" = true ]; then
     done
 fi
 
-[ "$DROP_DB" = true ]; then
+if [ "$DROP_DB" = true ]; then
     dropdb $2
 fi
 
