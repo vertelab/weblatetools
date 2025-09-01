@@ -1,36 +1,51 @@
-LOG_LEVEL="warning"   # default log level
+LOG_LEVEL="warn"   # default log level
 WITH_DEMO=true        # default installera med demo-data
 EXPORT_PO=false       # default: ingen po-export
 LANG_CODE="sv"        # default språk
 TEST=""
+DROP_DB=false
+MULTI_USER=""
 
-usage() { 
-    echo "Usage: checkmodule [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t]" 1>&2
-    echo "   -d   Database, new database is createdInstall without demo-data"
-    echo "   -D   Install without demo-data"
-    echo "   -e   Export PO file(s) after installation"
-    echo "   -L   Language code for PO export (default: sv)"
-    echo "   -t   Performe tests"
+usage() {
+    echo "Usage: checkmodule [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t] [--drop] [--multi-user]" 1>&2
+    echo "   -d           Database, new database is createdInstall without demo-data"
+    echo "   -D           No demo-data"
+    echo "   -m           Module list (comma separated)"
+    echo "   -e           Export PO file(s) after installation"
+    echo "   -L           Language code for PO export (default: sv)"
+    echo "   -t           Perform tests"
+    echo "   --drop       Drop database after completion"
+    echo "   --multi-user Multi-user mode, runs odoo on port 4444 in parallel"
     exit 1
 }
 
-while getopts "d:m:l:DeL:t" option; do
-    case $option in
-        d) ODOODB=${OPTARG} ;;
-        m) ODOOMODULES=${OPTARG} ;;
-        l)
-            LOG_LEVEL=${OPTARG}
+OPTIONS=$(getopt -o d:m:l:DeL:t -l drop,multi-user -- "$@")
+if [ $? -ne 0 ]; then
+    usage
+fi
+
+eval set -- "$OPTIONS"
+
+while true; do
+    case "$1" in
+        -d) ODOODB="$2"; shift 2 ;;
+        -m) ODOOMODULES="$2"; shift 2 ;;
+        -l)
+            LOG_LEVEL="$2"
             if [[ ! "$LOG_LEVEL" =~ ^(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)$ ]]; then
                 echo "Invalid log level: $LOG_LEVEL"
                 usage
             fi
+            shift 2
             ;;
-        D) WITH_DEMO=false ;;
-        e) EXPORT_PO=true ;;        
-        t) TEST="--test-enable" ;;
-        L) LANG_CODE=${OPTARG} ;;
-        :) echo "Option -$OPTARG requires an argument" >&2; usage ;;
-        \?) echo "Invalid option: -$OPTARG" >&2; usage ;;
+        -D) WITH_DEMO=false; shift ;;
+        -e) EXPORT_PO=true; shift ;;
+        -L) LANG_CODE="$2"; shift 2 ;;
+        -t) TEST="--test-enable"; shift ;;
+        --drop) DROP_DB=true; shift ;;
+        --multi-user) MULTI_USER="-p 4444"; shift ;;
+        --) shift; break ;;
+        *) echo "Invalid option: $1"; usage ;;
     esac
 done
 
@@ -43,7 +58,7 @@ fi
 echo "Creating Odoo ${ODOODB} for Odoo ${ODOOMODULES} with log level ${LOG_LEVEL}"
 [ "$WITH_DEMO" = false ] && DEMO_OPTION="--without-demo=all" || DEMO_OPTION=""
 sudo service odoo stop
-sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --init ${ODOOMODULES} ${TEST} --limit-time-cpu=180 --limit-time-real=300 --stop-after-init --log-level=${LOG_LEVEL} ${DEMO_OPTION}"
+sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --init ${ODOOMODULES} ${MULTI_USER} ${TEST} --limit-time-cpu=180 --limit-time-real=300 --stop-after-init --log-level=${LOG_LEVEL} ${DEMO_OPTION}"
 
 # Exportera PO-filer om flaggan är satt
 if [ "$EXPORT_PO" = true ]; then
@@ -56,4 +71,12 @@ if [ "$EXPORT_PO" = true ]; then
         sudo mv /tmp/$$.po ${PO_FILE}
     done
 fi
+
+[ "$DROP_DB" = true ]; then
+    dropdb $2
+fi
+
 sudo service odoo start
+
+
+
