@@ -107,5 +107,3 @@ if [ -z "$MULTI_USER" ]; then
     sudo service odoo start
 fi
 
-
-
