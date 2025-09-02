@@ -96,9 +96,9 @@ if [ "$EXPORT_PO" = true ]; then
 fi
 
 if [ "$DROP_DB" = true ]; then
-    if [ -n "$MULTI_USER" ] && yes_or_no "In order to drop the database odoo needs to be turn off. Do you want to turn of odoo? (yes or no): "; then
+    if [ -n "$MULTI_USER" ] && ask_yes_no "In order to drop the database odoo needs to be turn off. Do you want to turn off odoo?"; then
         sudo service odoo stop
-        MULTI_USER="true"
+        MULTI_USER=""
     fi
     sudo -u postgres dropdb $ODOODB
 fi
