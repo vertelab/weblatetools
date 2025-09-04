@@ -1,7 +1,7 @@
 LOG_LEVEL="warn"   # default log level
 WITH_DEMO=true        # default installera med demo-data
 EXPORT_PO=false       # default: ingen po-export
-LANG_CODE="sv"        # default språk
+LANG_CODE="sv_SE"        # default språk
 TEST=""
 DROP_DB=false
 MULTI_USER=""
@@ -81,18 +81,38 @@ if [ -z "$MULTI_USER" ]; then
     sudo service odoo stop
 fi
 
-sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --init ${ODOOMODULES} ${MULTI_USER} ${TEST} --limit-time-cpu=180 --limit-time-real=300 --stop-after-init --log-level=${LOG_LEVEL} ${DEMO_OPTION}"
-
-# Exportera PO-filer om flaggan är satt
-if [ "$EXPORT_PO" = true ]; then
+if [ "$EXPORT_PO" = false ]; then
+    sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --init ${ODOOMODULES} --load-language=${LANG_CODE} ${MULTI_USER} ${TEST} --limit-time-cpu=180 --limit-time-real=300 --stop-after-init --log-level=${LOG_LEVEL} ${DEMO_OPTION}"
+else
+    # Exportera PO-filer om flaggan är satt
+    [ ! -z "$MULTI_USER" ] && { echo "You can't combine --multi with -e"; exit 1; }
     echo "Exporting PO file(s) for language: $LANG_CODE"
     IFS=',' read -ra MODULE_LIST <<< "$ODOOMODULES"
+    sudo service odoo stop
     for module in "${MODULE_LIST[@]}"; do
-        PO_FILE="${module}-${LANG_CODE}.po"
+        SHORT_LANG_CODE=${LANG_CODE%%_*}  # Trimmar bort allt efter underscore, blir 'sv'
+        PO_FILE="${module}-${SHORT_LANG_CODE}.po"
         echo "Exporting: $PO_FILE"
-        sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --modules ${module} --i18n-export=/tmp/$$.po --lang=${LANG_CODE}"
+
+        # 1. Skapa/uppdatera databasen
+        sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} \
+            --database ${ODOODB} \
+            --without-demo=all \
+            --load-language=${LANG_CODE} \
+            --init ${module} \
+            --stop-after-init"
+
+        # 2. Exportera översättningar
+        sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} \
+            --database ${ODOODB} \
+            --modules ${module} \
+            --i18n-export=/tmp/$$.po \
+            --language=${LANG_CODE} \
+            --stop-after-init"
+
         sudo mv /tmp/$$.po ${PO_FILE}
     done
+    sudo service odoo start
 fi
 
 if [ "$DROP_DB" = true ]; then
