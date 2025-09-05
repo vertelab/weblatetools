@@ -89,19 +89,17 @@ else
     echo "Exporting PO file(s) for language: $LANG_CODE"
     IFS=',' read -ra MODULE_LIST <<< "$ODOOMODULES"
     sudo service odoo stop
+    
+    echo $ODOOMODULES
+    
+    # 1. Skapa/uppdatera databasen
+    sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --init ${ODOOMODULES} --without-demo=all --load-language=${LANG_CODE} --stop-after-init"
+           
     for module in "${MODULE_LIST[@]}"; do
         SHORT_LANG_CODE=${LANG_CODE%%_*}  # Trimmar bort allt efter underscore, blir 'sv'
         PO_FILE="${module}-${SHORT_LANG_CODE}.po"
         echo "Exporting: $PO_FILE"
-
-        # 1. Skapa/uppdatera databasen
-        sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} \
-            --database ${ODOODB} \
-            --without-demo=all \
-            --load-language=${LANG_CODE} \
-            --init ${module} \
-            --stop-after-init"
-
+        
         # 2. Exportera översättningar
         sudo su odoo -c "odoo --config ${ODOO_SERVER_CONF} \
             --database ${ODOODB} \
@@ -126,4 +124,3 @@ fi
 if [ -z "$MULTI_USER" ]; then
     sudo service odoo start
 fi
-
