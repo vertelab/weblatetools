@@ -6,25 +6,6 @@ TEST=""
 DROP_DB=false
 MULTI_USER=""
 
-ask_yes_no() {
-    local prompt="$1"
-    local answer
-    while true; do
-        read -p "$prompt (yes/no): " answer
-        case "$answer" in
-            yes|YES|y|Y)
-                return 0  # success, yes
-                ;;
-            no|NO|n|N)
-                return 1  # failure, no
-                ;;
-            *)
-                echo "Invalid response. Please answer yes or no."
-                ;;
-        esac
-    done
-}
-
 usage() {
     echo "Usage: checkmodule [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t] [--drop] [--multi-user]" 1>&2
     echo "   -d           Database, new database is createdInstall without demo-data"
@@ -114,11 +95,7 @@ else
 fi
 
 if [ "$DROP_DB" = true ]; then
-    if [ -n "$MULTI_USER" ] && ask_yes_no "In order to drop the database odoo needs to be turn off. Do you want to turn off odoo?"; then
-        sudo service odoo stop
-        MULTI_USER=""
-    fi
-    sudo -u postgres dropdb $ODOODB
+    sudo -u postgres dropdb -f $ODOODB
 fi
 
 if [ -z "$MULTI_USER" ]; then
