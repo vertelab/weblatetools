@@ -63,7 +63,7 @@ if [ -z "$MULTI_USER" ]; then
 fi
 
 if [ "$EXPORT_PO" = false ]; then
-    sudo su -m odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --init ${ODOOMODULES} --load-language=${LANG_CODE} ${MULTI_USER} ${TEST} --limit-time-cpu=180 --limit-time-real=300 --stop-after-init --log-level=${LOG_LEVEL} ${DEMO_OPTION}"
+    sudo -E su odoo -c "odoo --config ${ODOO_SERVER_CONF} --database ${ODOODB} --init ${ODOOMODULES} --load-language=${LANG_CODE} ${MULTI_USER} ${TEST} --limit-time-cpu=180 --limit-time-real=300 --stop-after-init --log-level=${LOG_LEVEL} ${DEMO_OPTION}"
 else
     # Exportera PO-filer om flaggan är satt
     [ ! -z "$MULTI_USER" ] && { echo "You can't combine --multi with -e"; exit 1; }
