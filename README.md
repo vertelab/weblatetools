@@ -102,7 +102,7 @@ Log in to the Odoo instance *sale_translated* and review the translations visual
 ```
 weblate_cli -w odoo upload-multi *.po
 ```
-__I want to translate a local project odoo-ai that maybe is not translated yet using the latest glossary__
+## I want to translate a local project odoo-ai that maybe is not translated yet using the latest glossary
 ```
 missing_po -p odoo-ai -s,
 ```
@@ -143,7 +143,7 @@ install_po -g *.po
 Install_po can also update Git with the latest changes
 
 
-__I want to translate the contract-module using latest glossary for Odoo 18 in OCA__
+## I want to translate the contract-module using latest glossary for Odoo 18 in OCA
 ```
 weblate_cli -w oca glossary -p contract-18-0 -t csv
 weblate_cli -w odoo deepl -p contract-18-0 -g glossary.csv -c contract-18.0-contract
@@ -166,7 +166,7 @@ Log in to the Odoo instance *sale_translated* and review the translations visual
 weblate_cli -w oca upload-multi *.po
 ```
 
-__I want to create missing po-files on OCA for project contract__
+## I want to create missing po-files on OCA for project contract
 
 Odoo creats empty po-files for each language and modules, but OCA does not. So you have to add each missing po-file on the Weblate website. Missing_po command can create
 a list of links directly to the OCA weblate site so its easy to create an empty po-file for your language. When the po-file is created you can download it and translate it as usual.
@@ -179,7 +179,7 @@ missing_po -s oca -p contract-18-0
 
 
 
-__I want to create a new glossary on OCA for project contract__
+## I want to create a new glossary on OCA for project contract
 
 1) download glossary from Odoo
 2) Download po-file from largest/main-module in OCA
@@ -187,7 +187,7 @@ __I want to create a new glossary on OCA for project contract__
 4) translate missing words using translate_po
 5) upload new oca-glossary
 
-__I want to create language-file for missing modules in OCA__
+## I want to create language-file for missing modules in OCA
 
 1) missing_po -w oca (list links to weblate)
 2) Use the link to weblate and create the file
