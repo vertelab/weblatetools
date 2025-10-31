@@ -33,10 +33,10 @@ class DeepLTranslator:
             target_lang=target_lang,
             entries=entries
         )
-        self.glossary_id = glossary.id
+        self.glossary_id = glossary.glossary_id
         logger.info(f"Glossary created id={self.glossary_id}, entries={len(entries)})")
 
-    def translate_po_file(self, po_path, target_lang="SV"):
+    def translate_po_file(self, po_path, target_lang="SV", source_lang="EN"):
         po = pofile(po_path)
         to_translate = [e.msgid for e in po if not e.msgstr]
 
@@ -51,7 +51,7 @@ class DeepLTranslator:
             batch = to_translate[i:i + batch_size]
             if self.glossary_id:
                 res = self.translator.translate_text(
-                    batch, target_lang=target_lang, glossary_id=self.glossary_id
+                    batch, target_lang=target_lang,source_lang=source_lang,glossary=self.glossary_id
                 )
             else:
                 res = self.translator.translate_text(batch, target_lang=target_lang)
@@ -119,4 +119,3 @@ def main():
 if __name__ == "__main__":
     import sys
     sys.exit(main())
-
