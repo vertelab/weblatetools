@@ -1,0 +1,15 @@
+Projekt: odoo-crm
+Kommandosträng:
+./checkmodule.sh -d tmp_database -m crm_bolagsfakta,crm_builtwith,crm_enrich_base,crm_enrich_phonemail -e -l info
+
+Projekt: odoo-csrd
+Kommandosträng:
+./
+checkmodule.sh -d tmp_database -m csrd_esrs_advisor,csrd_esrs_domain -e -l info
+
+
+jakob@odooutv18:/usr/share/odoo-csrd$ checkmodule -d tmp_database -m csrd_esrs_advisor,csrd_esrs_domain -e -l info
+jakob@odooutv18:/usr/share/odoo-csrd$ translate_po -g ~/weblatetools/local_po/glossary.csv *.po
+jakob@odooutv18:/usr/share/odoo-csrd$ check_po -c *.po
+jakob@odooutv18:/usr/share/odoo-csrd$ check_po -s *.po
+jakob@odooutv18:/usr/share/odoo-csrd$ check_po -l *.po
