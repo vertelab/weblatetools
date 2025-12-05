@@ -35,8 +35,8 @@ __missing_po__ -p all|project [-l language] [-e] [-s ,|"\n" (default)]   List in
   -e                 Sets project to odooext-* as search pattern  
   -s <separator>     Choose coma (,) or "\n" (new line, default) for listing  
 
-__checkmodule__ -d <database> -m <module>,<module> [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t] [--drop] [--multi-user]
-Created a new database, if no database with the given name exists, and installs all the given module.
+__checkmodule__ -d <database> -m <module>,<module> [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t] [--drop] [--multi-user]   
+  Created a new database, if no database with the given name exists, and installs all the given module.
 Note that the database already exists the --drop will remove this existing database. No warning will be given.   
   -d           Database, new database is created   
   -m           Module list (comma separated)   
