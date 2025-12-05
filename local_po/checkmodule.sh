@@ -8,7 +8,7 @@ MULTI_USER=""
 
 usage() {
     echo "Usage: checkmodule [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t] [--drop] [--multi-user]" 1>&2
-    echo "   -d           Database, new database is createdInstall without demo-data"
+    echo "   -d           Database, new database is created"
     echo "   -D           No demo-data"
     echo "   -m           Module list (comma separated)"
     echo "   -e           Export PO file(s) after installation"
