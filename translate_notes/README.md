@@ -14,7 +14,11 @@ jakob@odooutv18:~$ ./kolla_svpo_inhouse.sh
 1. Lista alla moduler och kod att skapa alla po-filer.
 jakob@odooutv18:~$ ./lista_alla_svpo.sh
 
-2. Gå till rätt projekt och skapa alla po-filer.
+2. Gå till rätt projekt:
+jakob@odooutv18:/usr/share/odoo-website-quote$ git pull
+jakob@odooutv18:/usr/share/odoo-website-quote$ odoosetperm
+
+2. ... och skapa alla po-filer.
 jakob@odooutv18:/usr/share/odoo-website-quote$ checkmodule -d jakob_translate -m
 website_quote_contract_project,website_quote_header,website_quote_monthly,
 website_quote_monthly_uom -e -l info --drop
