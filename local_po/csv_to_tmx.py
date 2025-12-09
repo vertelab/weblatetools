@@ -18,9 +18,16 @@ parser.add_argument('tgt_lang', default='sv', nargs='?', help='Målspråk (defau
 args = parser.parse_args()
 
 tmx = ET.Element('tmx', version='1.4')
-header = ET.SubElement(tmx, 'header', srclang=args.src_lang,
-                       adminlang='en-us', datatype='plaintext',
-                       segtype='sentence', oencoding='UTF-8')
+header = ET.SubElement(tmx, 'header', 
+    {'creationtool': 'Poedit', 'creationtoolversion': '3.0',
+     'datatype': 'plaintext', 'segtype': 'segment',
+     'o-tmf': 'Poedit', 'srclang': args.src_lang,
+     'adminlang': 'en-us', 'srclang': args.src_lang,
+     'oencoding': 'UTF-8', 'version': '1.4b'})
+
+#header = ET.SubElement(tmx, 'header', srclang=args.src_lang,
+#                       adminlang='en-us', datatype='plaintext',
+#                       segtype='sentence', oencoding='UTF-8')
 body = ET.SubElement(tmx, 'body')
 
 try:

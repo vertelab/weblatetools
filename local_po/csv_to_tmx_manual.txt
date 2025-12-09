@@ -1,0 +1,36 @@
+## 2025-12-09
+
+CSV till TMX för Poedit – Komplett guide
+
+1. Skapa och aktivera virtuell miljö (en gång)
+
+cd ~/weblatetools/local_po  # Din arbetsmapp
+python3 -m venv tmx-venv
+source tmx-venv/bin/activate
+pip install --upgrade pip
+pip install translate-toolkit
+
+
+* * *
+
+2. Konvertera CSV till TMX (varje gång)
+
+csv2po glossary.csv glossary.po
+po2tmx -l sv glossary.po glossary.tmx
+rm glossary.po  # Rensa temporärfil
+
+
+* * *
+
+För 3 kolumner (location,källtext,översättning):
+
+csv2po glossary.csv glossary.po
+po2tmx -l sv glossary.po glossary.tmx
+rm glossary.po
+
+
+* * *
+
+4. Avsluta session
+
+deactivate  # Stänger venv
