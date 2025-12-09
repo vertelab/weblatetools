@@ -28,6 +28,14 @@ csv2po glossary.csv glossary.po
 po2tmx -l sv glossary.po glossary.tmx
 rm glossary.po
 
+3. Importera i Poedit
+
+    Öppna PO-fil i Poedit
+
+    Catalog → Properties... → TMX Memories
+
+    Add... → välj glossary.tmx → OK
+
 
 * * *
 
