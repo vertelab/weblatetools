@@ -65,6 +65,23 @@ jakob@odooutv18:~$ ./check_po.sh odoo-website-quote
 -rw-rw-r-- 1 odoo odoo 3548 dec  8 12:45 website_quote_monthly_uom-sv.po
 jakob@odooutv18:~$ 
 
+-- fixa med uppdatering / ändring
+-- Leverans! :-)
+4. OdooUTV18
+jakob@odooutv18:/usr/share/odoo-website-quote/$ git pull
+
+-- Leverans till poroduktion!
+
+Last login: Tue Dec  9 06:40:36 2025 from 94.254.87.194
+jakob@pangolin:~$ odoo --version
+Odoo Server 18.0-20251205
+
+5. azzar.org
+-- odooposync kopierar **samtliga** sv.po filer i alla våra projekt till rätt hierarki i produtionsmiljön.
+-- man behöver inte välja olika projekt. Det tar en liten stund, men allt kommer med och det blir aldrig fel.
+jakob@odooutv18:~$ odooposync -h azzar.org
+
+
 
 
 ```
