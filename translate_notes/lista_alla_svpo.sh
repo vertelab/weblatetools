@@ -30,6 +30,7 @@ for project_dir in $BASE_PATH; do
             echo "Kommandosträng:"
           ### 2025-11-13  echo "./checkmodule.sh -d tmp_database -m $mod_csv -e -l info"
             echo "checkmodule -d jakob_translate -m $mod_csv -e -l info --drop"
+            echo "checkmodule -d jakob_demodax -m $mod_csv -e -l info"
         else
             echo "(Inga moduler saknar sv.po)"
         fi
