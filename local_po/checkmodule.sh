@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 LOG_LEVEL="warn"   # default log level
 WITH_DEMO=true        # default installera med demo-data
 EXPORT_PO=false       # default: ingen po-export
