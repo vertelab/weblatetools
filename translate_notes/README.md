@@ -82,6 +82,46 @@ Odoo Server 18.0-20251205
 jakob@odooutv18:~$ odooposync -h azzar.org
 
 
+6. odoosa_sync.py
+chmod +x odoosa_sync.py
+
+Detta skriptet laddar våra Odoo SA översättningar och skriver över de från Odoo SA.
+- skapar mappen /usr/share/odoosa-translate/
+- laddar från repot odoosa-translate till denna plats. 
+- kopierar rätt språkfil till rätt modul inne i core-odoo/addons/modulnamn/i18n/sv.po
+- med kommandot "checkmodule" installeras och exporteras den nu skapade sv.po-filen.
+- är denna större, fler rader, med kb, än den vi tidigare laddade ner har Odoo SA lagt in mer
+text i modulen.
+- vi öppnar po-filen med PoEdit och tittar på de tomma raderna som blir av den nya exporten.
+- vi fyller i lämplig översättning, för hand eller via DeepL, och lägger in den nya filen på odoosa-translate/ -repot.
+
+EXPECTED OUTPUT:
+
+jakob@paula:~$ ./odoosa_sync.py 
+Odoo version: 18
+Klona repo till: /tmp/tmprelsi2p9
+Cloning into '/tmp/tmprelsi2p9'...
+remote: Enumerating objects: 16, done.
+remote: Counting objects: 100% (16/16), done.
+remote: Compressing objects: 100% (16/16), done.
+remote: Total 16 (delta 4), reused 0 (delta 0), pack-reused 0 (from 0)
+Receiving objects: 100% (16/16), 47.87 KiB | 3.42 MiB/s, done.
+Resolving deltas: 100% (4/4), done.
+Hittade 4 .po-filer totalt
+  - odoo-19-website_slides-sv.po
+  - odoo-16-website_slides-sv.po
+  - odoo-18-website_slides-sv.po
+Hittade 1 odoo-18-*-sv.po filer
+
+🔄 Bearbetar: odoo-18-website_slides-sv.po
+🧹 Rensade /usr/share/odoosa-translate med sudo
+✅ Skapade och ägde /usr/share/odoosa-translate
+✗ website_slides: Ingen website_slides.po exporterades!
+jakob@paula:~$
+
+
+
+
 
 
 ```
