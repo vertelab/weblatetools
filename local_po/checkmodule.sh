@@ -56,7 +56,11 @@ fi
 
 # Installera moduler
 echo "Creating Odoo ${ODOODB} for Odoo ${ODOOMODULES} with log level ${LOG_LEVEL}"
-[ "$WITH_DEMO" = false ] && DEMO_OPTION="--without-demo=all" || DEMO_OPTION=""
+if [ "$WITH_DEMO" = "false" ]; then
+    DEMO_OPTION="--without-demo=all"
+else
+    DEMO_OPTION=""
+fi
 
 if [ -z "$MULTI_USER" ]; then
     sudo service odoo stop
