@@ -1,5 +1,8 @@
-
-
+# Vertel Translation
+1. Loopa igenom alla projekt >> alla moduler.
+2. Skapa .po fil
+3. kontrollera och jämför, kasta de som är okej och inte behöver åtgärd eller uppmärksamhet.
+4. Logga med tid för respektive installa tion.
 
 
 # Installera screen om det saknas
