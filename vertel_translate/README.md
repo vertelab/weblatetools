@@ -1,8 +1,9 @@
 # Vertel Translation
 1. Loopa igenom alla projekt >> alla moduler.
 2. Skapa .po fil
-3. kontrollera och jämför, kasta de som är okej och inte behöver åtgärd eller uppmärksamhet.
-4. Logga med tid för respektive installa tion.
+3. Kontrollera och jämför, kasta de som är okej och inte behöver åtgärd eller uppmärksamhet.
+4. Logga med tid för respektive installation.
+5. installera Screen för att köra över natten, utan att loopen tröttnar när Terminalen tröttnar. 
 
 
 # Installera screen om det saknas
