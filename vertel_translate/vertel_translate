@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+# jakob@odooutv18:~$ nano vertel_translate
+# jakob@odooutv18:~$ chmod +x vertel_translate
+# jakob@odooutv18:~$ ./vertel_translate
+import os
+import subprocess
+import glob
+import time
+from pathlib import Path
+
+BASE_PATH = "/usr/share"
+TARGET_PATH = "/usr/share/vertel-translate"
+PROJECT_PATTERN = os.path.join(BASE_PATH, "odoo-*")
+CHECKMODULE_CMD = "checkmodule"
+DB_NAME = "vertel_translate"
+LANG = "info"
+
+# Sätt till True för att bara testa loopen (ingen checkmodule, inga .po-filer)
+DRY_RUN = True
+
+# Kataloger att alltid hoppa över
+SKIP_DIRS = {".git", "__pycache__", ".idea", ".vscode"}
+
+def is_module_dir(project_path, name):
+    full = os.path.join(project_path, name)
+    if not os.path.isdir(full):
+        return False
+    if name in SKIP_DIRS or name.startswith("."):
+        return False
+    return True
+
+def count_lines_and_size(file_path):
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        size_kb = os.path.getsize(file_path) / 1024
+        return len(lines), size_kb
+    except FileNotFoundError:
+        return 0, 0
+
+# Skapa mål-katalogen (med sudo om det behövs) – men bara om vi INTE är i dry-run
+if not DRY_RUN:
+    if not os.path.exists(TARGET_PATH):
+        try:
+            os.makedirs(TARGET_PATH, exist_ok=True)
+        except PermissionError:
+            print(f"No permission to create {TARGET_PATH}, retrying with sudo...")
+            subprocess.run(["sudo", "mkdir", "-p", TARGET_PATH], check=True)
+            subprocess.run(["sudo", "chown",
+                            f"{os.getenv('USER')}:{os.getenv('USER')}",
+                            TARGET_PATH],
+                           check=True)
+    os.chdir(TARGET_PATH)
+
+    log_ok = open("ok_modules.log", "w")
+    log_fail = open("failed_modules.log", "w")
+    log_new = open("new_translations.log", "w")
+    log_time = open("execution_times.log", "w")
+    log_summary = open("project_summary.log", "w")
+else:
+    print("DRY RUN: Ingen export körs, jag listar bara projekt och moduler.\n")
+
+for project_path in glob.glob(PROJECT_PATTERN):
+    project_name = os.path.basename(project_path)
+    # Filtrera bort .git osv
+    modules = [
+        m for m in os.listdir(project_path)
+        if is_module_dir(project_path, m)
+    ]
+
+    print(f"--- Project: {project_name} ---")
+    print(f"Hittade {len(modules)} moduler:")
+
+    if DRY_RUN:
+        for module in modules:
+            print(f"  - {project_name}/{module}")
+        print()
+        continue  # hoppa resten av logiken i dry-run-läge
+
+    # Nedan körs bara när DRY_RUN = False
+    total_mod = len(modules)
+    success_count = 0
+    fail_count = 0
+    total_time = 0.0
+
+    for module in modules:
+        print(f"Processing {project_name}/{module}...")
+        start_time = time.time()
+
+        export_cmd = [
+            CHECKMODULE_CMD,
+            "-d", DB_NAME,
+            "-m", module,
+            "-e",
+            "-l", LANG,
+            "--drop"
+        ]
+
+        try:
+            subprocess.run(export_cmd, check=True,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
+        except subprocess.CalledProcessError as e:
+            elapsed = time.time() - start_time
+            fail_count += 1
+            log_fail.write(f"{project_name}/{module} failed (code {e.returncode}) after {elapsed:.1f}s\n")
+            log_time.write(f"{project_name}/{module}: FAILED ({elapsed:.1f}s)\n")
+            continue
+
+        elapsed = time.time() - start_time
+        total_time += elapsed
+        log_time.write(f"{project_name}/{module}: {elapsed:.1f}s\n")
+
+        po_file = Path(TARGET_PATH) / f"{module}.po"
+        if not po_file.exists():
+            fail_count += 1
+            log_fail.write(f"{project_name}/{module} -- no .po file produced ({elapsed:.1f}s)\n")
+            continue
+
+        num_lines, size_kb = count_lines_and_size(po_file)
+        if num_lines < 6:
+            fail_count += 1
+            log_fail.write(f"{project_name}/{module} -- too few lines ({num_lines}, {elapsed:.1f}s)\n")
+            po_file.unlink(missing_ok=True)
+            continue
+
+        existing_po = Path(project_path) / module / "i18n" / "sv.po"
+        if existing_po.exists():
+            orig_lines, _ = count_lines_and_size(existing_po)
+            if num_lines == orig_lines:
+                success_count += 1
+                po_file.unlink(missing_ok=True)
+                log_ok.write(f"{project_name}/{module} -- same lines ({num_lines}), skipped ({elapsed:.1f}s)\n")
+                continue
+
+        success_count += 1
+        log_new.write(f"{project_name}/{module}: {num_lines} lines, {size_kb:.2f} KB, {elapsed:.1f}s\n")
+        log_ok.write(f"{project_name}/{module} OK ({num_lines} lines, {elapsed:.1f}s)\n")
+
+    avg_time = (total_time / success_count) if success_count else 0
+    summary_line = (
+        f"{project_name}: {success_count}/{total_mod} OK, {fail_count} FAILS, "
+        f"avg time {avg_time:.1f}s\n"
+    )
+    print(summary_line.strip())
+    log_summary.write(summary_line)
+
+if not DRY_RUN:
+    log_ok.close()
+    log_fail.close()
+    log_new.close()
+    log_time.close()
+    log_summary.close()
+    print("\nAll projects processed. Logs saved to /usr/share/vertel-translate/")
+else:
+    print("DRY RUN klar. Inga exporter kördes.")
