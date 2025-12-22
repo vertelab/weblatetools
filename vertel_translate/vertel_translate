@@ -1,156 +1,209 @@
 #!/usr/bin/env python3
-# jakob@odooutv18:~$ nano vertel_translate
-# jakob@odooutv18:~$ chmod +x vertel_translate
-# jakob@odooutv18:~$ ./vertel_translate
+# -*- coding: utf-8 -*-
+"""
+Vertel translation automation script - SKAPAR PO-filer automatiskt!
+"""
+
 import os
 import subprocess
 import glob
 import time
 from pathlib import Path
+from difflib import unified_diff
+import polib  # ← SAKNADES!
 
+print("🚀 Skriptet startar...")
+
+if os.geteuid() != 0:
+    raise SystemExit(1)
+
+def are_po_files_identical(po1_path, po2_path):
+    """Jämför två PO-filer - identiska eller inte?"""
+    try:
+        po1 = polib.pofile(str(po1_path))
+        po2 = polib.pofile(str(po2_path))
+        
+        # Samma antal entries?
+        if len(po1) != len(po2):
+            return False
+        
+        # Samma msgid + msgstr för alla?
+        for entry1, entry2 in zip(sorted(po1, key=lambda e: e.msgid), 
+                                sorted(po2, key=lambda e: e.msgid)):
+            if (entry1.msgid != entry2.msgid or 
+                entry1.msgstr.strip() != entry2.msgstr.strip()):
+                return False
+        
+        return True
+    except:
+        return False
+
+
+# KONFIGURATION ← SAKNADES!
+VERTEL_DIR = Path("/usr/share/vertel-translate")
 BASE_PATH = "/usr/share"
-TARGET_PATH = "/usr/share/vertel-translate"
 PROJECT_PATTERN = os.path.join(BASE_PATH, "odoo-*")
-CHECKMODULE_CMD = "checkmodule"
 DB_NAME = "vertel_translate"
 LANG = "info"
 
-# Sätt till True för att bara testa loopen (ingen checkmodule, inga .po-filer)
-DRY_RUN = True
-
-# Kataloger att alltid hoppa över
-SKIP_DIRS = {".git", "__pycache__", ".idea", ".vscode"}
+LOG_FILES = {
+    "ok": "ok_modules.log",
+    "fail": "failed_modules.log",
+    "new": "new_translations.log",
+    "time": "execution_times.log",
+    "summary": "project_summary.log",
+}
 
 def is_module_dir(project_path, name):
     full = os.path.join(project_path, name)
-    if not os.path.isdir(full):
-        return False
-    if name in SKIP_DIRS or name.startswith("."):
-        return False
-    return True
+    return os.path.isdir(full) and os.path.exists(os.path.join(full, "__manifest__.py"))
 
 def count_lines_and_size(file_path):
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-        size_kb = os.path.getsize(file_path) / 1024
-        return len(lines), size_kb
-    except FileNotFoundError:
+            return len(f.readlines()), os.path.getsize(file_path) / 1024
+    except:
         return 0, 0
 
-# Skapa mål-katalogen (med sudo om det behövs) – men bara om vi INTE är i dry-run
-if not DRY_RUN:
-    if not os.path.exists(TARGET_PATH):
-        try:
-            os.makedirs(TARGET_PATH, exist_ok=True)
-        except PermissionError:
-            print(f"No permission to create {TARGET_PATH}, retrying with sudo...")
-            subprocess.run(["sudo", "mkdir", "-p", TARGET_PATH], check=True)
-            subprocess.run(["sudo", "chown",
-                            f"{os.getenv('USER')}:{os.getenv('USER')}",
-                            TARGET_PATH],
-                           check=True)
-    os.chdir(TARGET_PATH)
+def count_blank_translations(po_file_path):
+    blank_count = 0
+    try:
+        with open(po_file_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip().startswith('msgstr ""'):
+                    blank_count += 1
+    except:
+        pass
+    return blank_count
 
-    log_ok = open("ok_modules.log", "w")
-    log_fail = open("failed_modules.log", "w")
-    log_new = open("new_translations.log", "w")
-    log_time = open("execution_times.log", "w")
-    log_summary = open("project_summary.log", "w")
-else:
-    print("DRY RUN: Ingen export körs, jag listar bara projekt och moduler.\n")
+def compare_files(file1, file2, max_diff=4):
+    try:
+        with open(file1, "r", encoding="utf-8") as f1, open(file2, "r", encoding="utf-8") as f2:
+            lines1 = f1.readlines()
+            lines2 = f2.readlines()
+    except FileNotFoundError:
+        return 9999, True
+    diff = list(unified_diff(lines1, lines2))
+    return len(diff), len(diff) > max_diff
 
-for project_path in glob.glob(PROJECT_PATTERN):
-    project_name = os.path.basename(project_path)
-    # Filtrera bort .git osv
-    modules = [
-        m for m in os.listdir(project_path)
-        if is_module_dir(project_path, m)
-    ]
+# INITIERING
+print(f"🚀 Startar Vertel Translator i {VERTEL_DIR}")
 
-    print(f"--- Project: {project_name} ---")
-    print(f"Hittade {len(modules)} moduler:")
+# Rensa loggar
+for f in LOG_FILES.values():
+    log_path = VERTEL_DIR / f
+    if log_path.exists():
+        log_path.unlink()
 
-    if DRY_RUN:
-        for module in modules:
-            print(f"  - {project_name}/{module}")
-        print()
-        continue  # hoppa resten av logiken i dry-run-läge
+# Rensa gamla PO-filer
+for f in VERTEL_DIR.glob("*.po"):
+    f.unlink(missing_ok=True)
 
-    # Nedan körs bara när DRY_RUN = False
-    total_mod = len(modules)
-    success_count = 0
-    fail_count = 0
-    total_time = 0.0
+log_ok = open(VERTEL_DIR / LOG_FILES["ok"], "a")
+log_fail = open(VERTEL_DIR / LOG_FILES["fail"], "a")
+log_new = open(VERTEL_DIR / LOG_FILES["new"], "a")
+log_missing = open(VERTEL_DIR / LOG_FILES["saknas"], "a")
+log_time = open(VERTEL_DIR / LOG_FILES["time"], "a")
+log_summary = open(VERTEL_DIR / LOG_FILES["summary"], "a")
 
-    for module in modules:
-        print(f"Processing {project_name}/{module}...")
+# HUVUDLOOP - KÖR I VARJE MODULMAPP!
+for project_path_str in glob.glob(PROJECT_PATTERN):
+    project_path = Path(project_path_str)
+    project_name = project_path.name
+    print(f"\n--- 📦 Project: {project_name} ---")
+    
+    # Lista moduler i projektet (endast mappar med __manifest__.py)
+    modules = []
+    for item in project_path.iterdir():
+        if item.is_dir() and (item / "__manifest__.py").exists():
+            modules.append(item.name)
+    
+    if not modules:
+        print(f"  ℹ️ Inga moduler i {project_name}")
+        continue
+    
+    project_ok = 0
+    project_fails = 0
+    project_times = []
+    
+    
+    for module_name in modules:
+        module_path = project_path / module_name
         start_time = time.time()
-
-        export_cmd = [
-            CHECKMODULE_CMD,
-            "-d", DB_NAME,
-            "-m", module,
-            "-e",
-            "-l", LANG,
-            "--drop"
+        print(f"  🧪 {module_name} (cwd={module_path})...")
+        
+        # Kör checkmodule - skapar i18n/sv.po!
+        cmd = [
+            'bash', '/usr/local/bin/checkmodule',
+            '-d', 'vertel_translate',
+            '-m', f'base,{module_name}',  # BASE obligatoriskt!
+            '-e', '-L', 'sv', '--drop'    # Export + svenska + rensa!
         ]
-
+        
         try:
-            subprocess.run(export_cmd, check=True,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
-        except subprocess.CalledProcessError as e:
+            result = subprocess.run(
+                cmd, cwd=module_path, capture_output=True, text=True, timeout=30
+            )
             elapsed = time.time() - start_time
-            fail_count += 1
-            log_fail.write(f"{project_name}/{module} failed (code {e.returncode}) after {elapsed:.1f}s\n")
-            log_time.write(f"{project_name}/{module}: FAILED ({elapsed:.1f}s)\n")
-            continue
+            
+            # KOPIERA färdig sv.po från checkmodule!
+            source_po = module_path / 'i18n' / 'sv.po'
+            target_po = VERTEL_DIR / f"{module_name}.po"
 
-        elapsed = time.time() - start_time
-        total_time += elapsed
-        log_time.write(f"{project_name}/{module}: {elapsed:.1f}s\n")
+            if source_po.exists():
+                target_po.write_bytes(source_po.read_bytes())
+                size_kb = source_po.stat().st_size / 1024
+                print(f"  ⏱️  {module_name}: {elapsed:.1f}s")
+                print(f"  📄 KOPIERAD: {module_name}.po ({size_kb:.1f} KB)")
+                
+                # JÄMFÖR med befintlig
+                existing_module_po = module_path / 'i18n' / 'sv.po.existing'
+                module_po_path = module_path / 'i18n' / 'sv.po'
+                
+                if module_po_path.exists():
+                    if are_po_files_identical(target_po, module_po_path):
+                        print(f"  🗑️  {module_name}.po IDENTISK - RADERAD!")
+                        target_po.unlink()
+                        project_ok += 1
+                        log_ok.write(f"{project_name}/{module_name}: OK\n") 
+                    else:
+                        print(f"  ⚠️  {module_name}.po BEHÖVER UPPDATERING!")
+                        module_po_path.rename(existing_module_po)
+                        source_po.copy2(module_po_path)
+                        project_fails += 1
+                        log_fail.write(f"{project_name}/{module_name}: BEHÖVER UPPDATERING\n")
+                        with open(VERTEL_DIR / 'needs_work.log', 'a') as f:
+                            f.write(f"{project_name}/{module_name}: BEHÖVER ÖVERSÄTTNING\n")
+                else:
+                    print(f"  📄 {module_name}: NY!")
+                    project_fails += 1
+                    log_new.write(f"{project_name}/{module_name}: NY\n")
+            else:
+                print(f"  ⚠️  {module_name}: Ingen sv.po")
+                project_fails += 1
+                log_missing.write(f"{project_name}/{module_name}: sv.po-fil saknas\n")
+                
+        except subprocess.TimeoutExpired:
+            print(f"  ⏰ {module_name}: TIMEOUT!")
+            project_fails += 1
+        except subprocess.CalledProcessError:
+            print(f"  ❌ {module_name}: FEL!")
+            project_fails += 1
+        except Exception as e:
+            print(f"  ❌ {module_name}: {e}")
+            project_fails += 1
 
-        po_file = Path(TARGET_PATH) / f"{module}.po"
-        if not po_file.exists():
-            fail_count += 1
-            log_fail.write(f"{project_name}/{module} -- no .po file produced ({elapsed:.1f}s)\n")
-            continue
 
-        num_lines, size_kb = count_lines_and_size(po_file)
-        if num_lines < 6:
-            fail_count += 1
-            log_fail.write(f"{project_name}/{module} -- too few lines ({num_lines}, {elapsed:.1f}s)\n")
-            po_file.unlink(missing_ok=True)
-            continue
+    # Project-sammanfattning
+    avg_time = sum(project_times) / len(project_times) if project_times else 0.0
+    print(f"📊 {project_name}: {project_ok}/{len(modules)} OK, {project_fails} FAILS, avg {avg_time:.1f}s")
+    
+    with open(VERTEL_DIR / 'project_summary.log', 'a') as f:
+        f.write(f"{project_name}: {project_ok}/{len(modules)} OK, {project_fails} FAILS\n")
 
-        existing_po = Path(project_path) / module / "i18n" / "sv.po"
-        if existing_po.exists():
-            orig_lines, _ = count_lines_and_size(existing_po)
-            if num_lines == orig_lines:
-                success_count += 1
-                po_file.unlink(missing_ok=True)
-                log_ok.write(f"{project_name}/{module} -- same lines ({num_lines}), skipped ({elapsed:.1f}s)\n")
-                continue
+# STÄNG LOGGAR
+for f in [log_ok, log_fail, log_new, log_missing, log_time, log_summary]:
+    f.close()
 
-        success_count += 1
-        log_new.write(f"{project_name}/{module}: {num_lines} lines, {size_kb:.2f} KB, {elapsed:.1f}s\n")
-        log_ok.write(f"{project_name}/{module} OK ({num_lines} lines, {elapsed:.1f}s)\n")
-
-    avg_time = (total_time / success_count) if success_count else 0
-    summary_line = (
-        f"{project_name}: {success_count}/{total_mod} OK, {fail_count} FAILS, "
-        f"avg time {avg_time:.1f}s\n"
-    )
-    print(summary_line.strip())
-    log_summary.write(summary_line)
-
-if not DRY_RUN:
-    log_ok.close()
-    log_fail.close()
-    log_new.close()
-    log_time.close()
-    log_summary.close()
-    print("\nAll projects processed. Logs saved to /usr/share/vertel-translate/")
-else:
-    print("DRY RUN klar. Inga exporter kördes.")
+print(f"\n🎉 KLART! Kolla PO-filer i {VERTEL_DIR}")
+print("📄 poedit *.po  # Översätt röda!")
