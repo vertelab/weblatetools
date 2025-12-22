@@ -7,13 +7,19 @@
 
 
 # Installera screen om det saknas
+```
 sudo apt install screen
+```
 
 # Starta en ny screen-session
+```
 screen -S vertel_translate
-
+```
 # Kör ditt skript INOM screen
-sudo ./vertel_translate
+```
+jakob@odooutv18:/usr/share/vertel-translate$ sudo chmod +x vertel_translate
+jakob@odooutv18:/usr/share/vertel-translate$ sudo ./vertel_translate
+```
 
 # Tryck Ctrl+A, sedan D för att "detach" (lämna sessionen)
 
