@@ -1,0 +1,3 @@
+sudo ./script.py              # Interaktivt 
+sudo ./script.py --auto       # Kör allt automatiskt
+sudo ./script.py --auto --no-sync  # Diff men ingen sync/push
