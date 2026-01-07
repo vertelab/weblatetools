@@ -14,9 +14,14 @@ import polib  # ← SAKNADES!
 
 print("🚀 Skriptet startar...")
 
+# TYDLIGT sudo-meddelande
 if os.geteuid() != 0:
+    print("\n❌ SKRIPTET KräVER ROOT-RÄTTIGHETER!")
+    print("💡 Kör: sudo ./vertel_translate")
+    print("\n   eller")
+    print("   sudo bash vertel_translate")
+    input("Tryck Enter när du kört med sudo...")  # Väntar på användaren
     raise SystemExit(1)
-
 def are_po_files_identical(po1_path, po2_path):
     """Jämför två PO-filer - identiska eller inte?"""
     try:
@@ -50,6 +55,7 @@ LOG_FILES = {
     "ok": "ok_modules.log",
     "fail": "failed_modules.log",
     "new": "new_translations.log",
+    "missing": "missing_translations.log",
     "time": "execution_times.log",
     "summary": "project_summary.log",
 }
@@ -89,11 +95,18 @@ def compare_files(file1, file2, max_diff=4):
 # INITIERING
 print(f"🚀 Startar Vertel Translator i {VERTEL_DIR}")
 
-# Rensa loggar
+
+# SKAPA/Rensa loggar med errorhantering
 for f in LOG_FILES.values():
     log_path = VERTEL_DIR / f
-    if log_path.exists():
-        log_path.unlink()
+    try:
+        if log_path.exists():
+            log_path.unlink()
+        log_path.touch()
+        print(f"📝 Logg OK: {log_path.name}")
+    except Exception as e:
+        print(f"❌ Loggfels {log_path.name}: {e}")
+        raise SystemExit(1)
 
 # Rensa gamla PO-filer
 for f in VERTEL_DIR.glob("*.po"):
@@ -102,7 +115,7 @@ for f in VERTEL_DIR.glob("*.po"):
 log_ok = open(VERTEL_DIR / LOG_FILES["ok"], "a")
 log_fail = open(VERTEL_DIR / LOG_FILES["fail"], "a")
 log_new = open(VERTEL_DIR / LOG_FILES["new"], "a")
-log_missing = open(VERTEL_DIR / LOG_FILES["saknas"], "a")
+log_missing = open(VERTEL_DIR / LOG_FILES["missing"], "a")
 log_time = open(VERTEL_DIR / LOG_FILES["time"], "a")
 log_summary = open(VERTEL_DIR / LOG_FILES["summary"], "a")
 
@@ -179,9 +192,27 @@ for project_path_str in glob.glob(PROJECT_PATTERN):
                     project_fails += 1
                     log_new.write(f"{project_name}/{module_name}: NY\n")
             else:
-                print(f"  ⚠️  {module_name}: Ingen sv.po")
+                print(f"  📄 {module_name}: SKAPAR NY TOM sv.po!")
+                
+                # SKAPA tom PO-fil med modul-info
+                target_po = VERTEL_DIR / f"{module_name}.po"
+                empty_po_content = f'''# Translation template
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo {module_name} 1.0\\n"
+"Report-Msgid-Bugs-To: \\n"
+"POT-Creation-Date: {time.strftime("%Y-%m-%d %H:%M")}\\n"
+"PO-Revision-Date: {time.strftime("%Y-%m-%d %H:%M")}\\n"
+"Last-Translator: Vertel Translate <>\\n"
+"Language: sv_SE\\n"
+"MIME-Version: 1.0\\n"
+"Content-Type: text/plain; charset=UTF-8\\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\\n"
+'''
+                target_po.write_text(empty_po_content, encoding="utf-8")
+                print(f"  ✅ {module_name}.po SKAPAD ({target_po.stat().st_size/1024:.1f} KB)")
                 project_fails += 1
-                log_missing.write(f"{project_name}/{module_name}: sv.po-fil saknas\n")
+                log_new.write(f"{project_name}/{module_name}: NY TOM PO\\n")
                 
         except subprocess.TimeoutExpired:
             print(f"  ⏰ {module_name}: TIMEOUT!")
