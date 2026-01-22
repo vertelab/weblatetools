@@ -59,5 +59,10 @@ lines 1-21/21 (END)jakob@dhcpserver:~$
 ```
 echo 'alias verify-dhcp="sudo dhcpd -t -cf /etc/dhcp/dhcpd.conf && echo OK"' >> ~/.bashrc
 source ~/.bashrc
-
+```
+# sudo service restart
+```
+sudo service isc-dhcp-server restart
+sudo service isc-dhcp-server start
+sudo service isc-dhcp-server stop 
 ```
