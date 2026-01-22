@@ -20,7 +20,6 @@ Aktiva: 18
 Inaktiva: 86 (SÄKERT att rensa)
 ```
 # Verify dhcp.conf
-
 ```
 jakob@dhcpserver:~$ sudo nano verify_dhcp.bs
 jakob@dhcpserver:~$ sudo chmod +x verify_dhcp.bs 
@@ -55,6 +54,10 @@ Jan 22 14:33:08 dhcpserver sh[64100]: Sending on   Socket/fallback/fallback-net
 Jan 22 14:33:08 dhcpserver dhcpd[64100]: Sending on   Socket/fallback/fallback-net
 Jan 22 14:33:08 dhcpserver dhcpd[64100]: Server starting service.
 lines 1-21/21 (END)jakob@dhcpserver:~$ 
-
+```
+# Make alias
+```
+echo 'alias verify-dhcp="sudo dhcpd -t -cf /etc/dhcp/dhcpd.conf && echo OK"' >> ~/.bashrc
+source ~/.bashrc
 
 ```
