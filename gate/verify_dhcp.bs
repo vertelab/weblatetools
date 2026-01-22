@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# 1. Testa konfigurationen
+sudo dhcpd -t -cf /etc/dhcp/dhcpd.conf
+
+# 2. Om inga fel visas, testa return-kod (0 = OK)
+if [ $? -eq 0 ]; then
+    echo "✅ dhcpd.conf är perfekt!"
+    sudo systemctl restart isc-dhcp-server
+    sudo systemctl status isc-dhcp-server
+else
+    echo "❌ Syntaxfel i dhcpd.conf - fixa först!"
+fi
