@@ -6,6 +6,7 @@ LANG_CODE="sv_SE"        # default språk
 TEST=""
 DROP_DB=false
 MULTI_USER=""
+ODOO_SERVER_CONF=${ODOO_SERVER_CONF:-"/etc/odoo/odoo.conf"}
 
 usage() {
     echo "Usage: checkmodule [-d <database>] [-m <module>,<module>] [-l <log_level>(debug|debug_rpc|debug_sql|debug_rpc_answer|info|warn|test|error|critical|notset)] [-D] [-e] [-L <lang_code>] [-t] [--drop] [--multi-user]" 1>&2
