@@ -2,7 +2,8 @@
 1. Problem: sv.po -files needs to be updated and doing so in bulk will also add new errors on other modules.
 2. Solution: Loop though all projects + modules and download ONLY the sv.po files!
 
-#Expected output
+
+# Expected output
 ```
 jakob@odooutv18:~$ ./gitpull_sv.sh 
 📁 Projekt: /usr/share/odoo-account
