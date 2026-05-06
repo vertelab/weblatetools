@@ -1,0 +1,68 @@
+#!/bin/bash
+# make it executable!
+# chmod +x gitpull_sv.po
+
+function odoogitpull_lang_sv() {
+    [ -f /etc/odoo/odoo.tools ] && . /etc/odoo/odoo.tools
+
+    if [ -n "$ODOOADDONS" ]; then
+        CWD=$(pwd)
+        ERROR_LOG=~/odoogitpull_lang_sv.err
+        
+        for p in ${ODOOADDONS//,/ }; do
+
+            # FILTRERA - BARA VÅRA odoo-* projekt!
+            if [[ ! "$p" =~ odoo- ]] || [[ "$p" == *"odooext"* ]]; then
+                echo "⏭️  Skippar externa: $p"
+                continue
+            fi
+
+            if [ -d "$p/.git" ]; then
+                echo "📁 Projekt: $p"
+                
+                # Sätt safe.directory för hela projektet
+                grep -q "$p" ~/.gitconfig || git config --global --add safe.directory "$p"
+                
+                cd "$p" || continue
+                
+                # LOOP 2: Loopa igenom alla MODULER i projektet
+                for module in */; do
+                    module=${module%/}  # Ta bort / i slutet
+                    if [ -d "$module" ] && [ -f "$module/__manifest__.py" ]; then
+                        echo -n "  📦 Modul: $module ... "
+                        
+                        if [ -f "$module/i18n/sv.po" ]; then
+                            echo "✅ Hittade sv.po!"
+                            
+                            cd "$module" || continue
+                            
+                            # FÖRST: kolla om filen är tracked av git
+                            if git ls-files --error-unmatch "i18n/sv.po" > /dev/null 2>&1; then
+                                git fetch origin 2>>"$ERROR_LOG"
+                                git checkout origin/$(git rev-parse --abbrev-ref HEAD) -- i18n/sv.po 2>>"$ERROR_LOG"
+                                echo "  ✅ Uppdaterad!"
+                            else
+                                echo "  🚫 i18n/sv.po är inte känd för git (ej commitad eller ignoreras)"
+                                echo "  🚫 Ignorerar uppdatering: $module" >> "$ERROR_LOG"
+                            fi
+                            
+                            cd "$p"
+                        else
+                            echo "❌ Ingen sv.po"
+                        fi
+                    fi
+                done
+                
+                cd "$CWD"
+            fi
+        done
+        
+        echo "📋 Fel-log (om några):"
+        [ -f "$ERROR_LOG" ] && cat "$ERROR_LOG" || echo "Inga git-fel."
+    fi
+
+    sudo chown -R odoo:odoo /usr/share/odoo*/
+    sudo chmod -R g+w /usr/share/odoo*/
+}
+
+odoogitpull_lang_sv
