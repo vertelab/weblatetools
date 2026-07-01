@@ -70,46 +70,22 @@ tmpfs           2,9G   16K  2,9G   1% /run/user/1113
 7,7G	/var/lib/postgresql
 
 --- Databasstorlekar (via psql, störst först) ---
-  ekonomisystem_bas_riks                        217 MB
-  huddinge_demo                                 215 MB
-  ekonomisystem_bas_mall                        214 MB
-  svenska_kyrkan_avtal                          199 MB
-  ekero                                         182 MB
-  sparv_staging_db                              167 MB
   aaw                                           160 MB
-  ekero_backup                                  150 MB
-  odoo-csrd                                     147 MB
   lars_test                                     136 MB
   property_ledningsystem                        125 MB
-  framtidens_ekonomisystem                      122 MB
-  pledra                                        116 MB
   Bokning                                       109 MB
   jakob_demo                                    107 MB
   aaw_demo                                      104 MB
-  itsm_demo                                     102 MB
   jakob-POS                                     99 MB
-  stralsakerhet_demo                            98 MB
   l10n_se_camt_file                             97 MB
-  huddingekommun_lms                            96 MB
-  hapai_2026_02_11                              94 MB
-  stralsakerhetsmyndigheten                     93 MB
   resturant_table_booking                       90 MB
   payroll_test                                  90 MB
   transit                                       89 MB
-  hagdahlsakademien                             88 MB
-  esco                                          87 MB
   budget                                        87 MB
-  marielund_2026-06-18                          87 MB
-  hapai                                         86 MB
-  pos_greengate                                 85 MB
-  change_analytic_plan                          85 MB
   lon                                           84 MB
   planning_jun                                  84 MB
   framtiden_ike                                 84 MB
-  skyltstallet                                  83 MB
-  greengate_l10n_pos                            82 MB
   booking_sale_rental                           80 MB
-  framtidens_ike                                80 MB
   sale_website_pdf                              80 MB
   l10n_se_tax_report                            80 MB
   odoo-resource                                 80 MB
@@ -117,16 +93,13 @@ tmpfs           2,9G   16K  2,9G   1% /run/user/1113
   ai_invoice                                    78 MB
   plw_ayomir                                    76 MB
   prd_excel                                     76 MB
-  framtidens_ekonomi                            75 MB
   jakob-MIS                                     75 MB
-  intrastat                                     73 MB
   ekonomisystem_ehandel                         72 MB
   monthly_quote                                 71 MB
   skattekonto                                   70 MB
   framtid_ike                                   68 MB
   l10n_se_sie_edi                               67 MB
   mcp-test                                      64 MB
-  kommun_bas_hudding                            64 MB
   alias                                         63 MB
   period_date_rages                             63 MB
   l10n_se                                       62 MB
@@ -144,7 +117,6 @@ tmpfs           2,9G   16K  2,9G   1% /run/user/1113
   lms_import_export_test                        54 MB
   DMS_sync                                      54 MB
   elearning_import_no_demo_data                 53 MB
-  uddevalla                                     52 MB
   survey                                        52 MB
   planning_ce                                   51 MB
   reception                                     51 MB
