@@ -2,6 +2,10 @@
 
 Vår dator fick agera testdator!
 
+```
+nohup sudo ./diskanalys_odooutv18.sh & 
+```
+
 
 #Förväntat resultat
 
