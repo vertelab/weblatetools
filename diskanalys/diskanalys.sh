@@ -10,7 +10,7 @@ set -uo pipefail
 
 HOST=$(hostname -s 2>/dev/null || hostname)
 DATE=$(date +%Y%m%d_%H%M%S)
-OUTDIR="/home/krajak"
+OUTDIR="/var/log/diskanalys"
 OUTFILE="$OUTDIR/diskanalys_${HOST}_${DATE}.txt"
 LOCKFILE="$OUTDIR/.diskanalys_${HOST}.lock"
 
