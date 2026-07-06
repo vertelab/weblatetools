@@ -7,6 +7,15 @@ nohup sudo ./diskanalys_odooutv18.sh &
 ```
 
 
+Lägg skriptet i /etc/cron.weekly , chmod +x , skapa sökvägen /var/log/diskanalys
+
+```
+sudo nano /etc/cron.weekly/diskanalys.bs
+sudo chmod +x /etc/cron.weekly/diskanalys.bs
+sudo mkdir /var/log/diskanalys 
+```
+
+
 #Förväntat resultat
 
 ```
