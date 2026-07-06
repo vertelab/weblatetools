@@ -2,8 +2,6 @@
 # backup_status.sh - Dirvish backup status report
 
 BACKUP_DIR="/srv/backup"
-## Save in /home :
-## REPORT="$HOME/backup_status_$(date +%Y-%m-%d_%H%M).txt"
 REPORT="/var/log/backup-status/backup_status_$(date +%Y-%m-%d_%H%M).txt"
 SIZES=$(mktemp /tmp/backup_sizes_XXXXXX)
 MAX_JOBS=4
