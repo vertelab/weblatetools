@@ -1,4 +1,4 @@
-#Vi vill ha koll på kundens infrastruktur, dom har kort-kopplad Terminal.
+#Vi vill ha koll på kundens infrastruktur, dom har kort-kopplad Terminal. Det andra skriptet för dessa saker är backup_status.
 
 Vår dator fick agera testdator!
 
